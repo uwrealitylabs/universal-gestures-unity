@@ -31,7 +31,7 @@ public class JsonWriter : MonoBehaviour
     {
         string prefix = ",\n    "; // Prefix & Suffix for each entry for proper json formatting
         string suffix = "\n]";
-        string jsonDir = Application.dataPath + "/../JsonData"; // Current directory to save json files
+        string jsonDir = Application.dataPath + "/../JsonData/"; // Current directory to save json files
         string path = jsonDir + gestureName + ".json"; 
         if (!File.Exists(path))
         {
