@@ -11,6 +11,8 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
 
+    
+
     // Start is called before the first frame update
     void Start()
     {

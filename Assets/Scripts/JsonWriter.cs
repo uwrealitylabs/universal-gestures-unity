@@ -1,13 +1,11 @@
-using Meta.XR.MRUtilityKit;
 using System;
 using System.IO;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using UnityEngine;
 
 
-// JSON File Writer
+// -- JSON File Writer --
+// JSON files currently saved at: /universal-gestures-unity/JsonData/{gestureName}.json
 // JSON file will look like this:
 // [
 //    {"confidence":0, "handData":[...]},
@@ -24,23 +22,25 @@ public class JsonWriter : MonoBehaviour
     public string gestureName;
     class GestureData
     {
-        public int confidence;
-        public float[] handData;
+        public int confidence; // confidence of gesture (label)
+        public float[] handData; // float array of hand position data (features)
     }
-    // Start is called before the first frame update
+    
+    // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
     void JsonWrite(GestureData gestureData)
     {
         string prefix = ",\n    "; // Prefix & Suffix for each entry for proper json formatting
         string suffix = "\n]";
-        string path = Application.dataPath + "/../JsonData/" + gestureName + ".json"; // Path to json file associated w gesture
+        string jsonDir = Application.dataPath + "/../JsonData"; // Current directory to save json files
+        string path = jsonDir + gestureName + ".json"; 
         if (!File.Exists(path))
         {
-            File.Create(path); // Create json if does not already exist
+            File.Create(path); 
         }
         FileStream stream = new FileStream(path, FileMode.Open);
         if (stream.Length == 0)
         {
-            prefix = "[\n    "; // Prefix for first entry
+            prefix = "[\n    "; 
         }
         stream.Position = Math.Max(stream.Length - 2, 0);
         string jsonString = prefix + JsonUtility.ToJson(gestureData) + suffix;
@@ -50,29 +50,37 @@ public class JsonWriter : MonoBehaviour
         stream.Close();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // When SHIFT or TAB pressed:
+        // - Retrieve hand data from TestingSkeleton 
+        // - If SHIFT, set confidence to 1, else 0
+        // - Write data to json file
+
         if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.Tab))
         {
             GestureData gestureData = new GestureData();
-            gestureData.confidence = 1;
+            gestureData.confidence = 1; 
+            //TEMP (Generates random data):
             gestureData.handData = new float[10];
             for (int i = 0; i < 10; i++)
             {
-                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f); // Currently random data for testing purposes
+                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f); 
             }
+            // 
             JsonWrite(gestureData);
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
             GestureData gestureData = new GestureData();
-            gestureData.confidence = 0;
+            gestureData.confidence = 0; 
+            //TEMP:
             gestureData.handData = new float[10];
             for (int i = 0; i < 10; i++)
             {
                 gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f);
             }
+            // --
             JsonWrite(gestureData);
         }
     }
