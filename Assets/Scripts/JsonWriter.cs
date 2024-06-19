@@ -23,7 +23,7 @@ public class JsonWriter : MonoBehaviour
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
-        public float[] handData; // float array of hand position data (features)
+        public static float[] handData; // float array of hand position data (features)
     }
     
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.

@@ -10,6 +10,7 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHand;
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
+    const int NUM_FEATURES = 17;
 
     // Start is called before the first frame update
     void Start()
@@ -49,5 +50,10 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
         Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
+
+        // Add values to JsonWriter.GestureData.handData
+        JsonWriter.GestureData.handData = [indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition,
+                                           thumbFingerCurl, thumbFingerAbduction, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition,
+                                           ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition];
     }   
 }
