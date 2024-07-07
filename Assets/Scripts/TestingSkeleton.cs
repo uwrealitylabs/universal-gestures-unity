@@ -54,7 +54,5 @@ public class TestingSkeleton : MonoBehaviour
 
         // Add values to JsonWriter.GestureData.handData
         handData = new [] {thumbFingerCurl, thumbFingerAbduction, indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition};
-        
-        // JsonWriter.GestureData.handData = [indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, thumbFingerCurl, thumbFingerAbduction, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition];
     }   
 }

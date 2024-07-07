@@ -22,7 +22,7 @@ public class FingerStatsDisplay : MonoBehaviour
         // Update each TextMeshPro object with the corresponding value
         for (int i = 0; i < textMeshObjects.Length; i++)
         {
-            textMeshObjects[i].text = TestingSkeleton.handData[i].ToString();
+            textMeshObjects[i].text = System.Math.Round(TestingSkeleton.handData[i], 2).ToString();
         }
     }
 }
