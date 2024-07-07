@@ -23,7 +23,7 @@ public class JsonWriter : MonoBehaviour
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
-        public static float[] handData; // float array of hand position data (features)
+        public float[] handData; // float array of hand position data (features)
     }
     
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
@@ -50,7 +50,7 @@ public class JsonWriter : MonoBehaviour
         stream.Close();
     }
 
-    void Update()
+    void LateUpdate()
     {
         // When SHIFT or TAB pressed:
         // - Retrieve hand data from TestingSkeleton 
@@ -61,26 +61,18 @@ public class JsonWriter : MonoBehaviour
         {
             GestureData gestureData = new GestureData();
             gestureData.confidence = 1; 
-            //TEMP (Generates random data):
-            gestureData.handData = new float[10];
-            for (int i = 0; i < 10; i++)
-            {
-                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f); 
-            }
-            // 
+
+            gestureData.handData = TestingSkeleton.handData;
+
             JsonWrite(gestureData);
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
             GestureData gestureData = new GestureData();
             gestureData.confidence = 0; 
-            //TEMP:
-            gestureData.handData = new float[10];
-            for (int i = 0; i < 10; i++)
-            {
-                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f);
-            }
-            // --
+
+            gestureData.handData = TestingSkeleton.handData;
+
             JsonWrite(gestureData);
         }
     }
