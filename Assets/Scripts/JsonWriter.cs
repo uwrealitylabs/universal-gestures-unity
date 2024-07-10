@@ -19,6 +19,7 @@ using UnityEngine;
 
 public class JsonWriter : MonoBehaviour
 {
+    [SerializeField] private RecordingStatusUI recordingStatusUI;
     public string gestureName;
     class GestureData
     {
@@ -47,6 +48,7 @@ public class JsonWriter : MonoBehaviour
         byte[] insertBytes = Encoding.ASCII.GetBytes(jsonString);
         stream.Write(insertBytes);
         Debug.Log("Writing to " + gestureName + ".json: '" + jsonString + "'");
+        recordingStatusUI.targetFile = gestureName + ".json";
         stream.Close();
     }
 
@@ -65,6 +67,8 @@ public class JsonWriter : MonoBehaviour
             gestureData.handData = TestingSkeleton.handData;
 
             JsonWrite(gestureData);
+
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
@@ -74,6 +78,9 @@ public class JsonWriter : MonoBehaviour
             gestureData.handData = TestingSkeleton.handData;
 
             JsonWrite(gestureData);
+
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
         }
+        else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
     }
 }

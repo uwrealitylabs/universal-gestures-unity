@@ -219,6 +219,7 @@ GameObject:
   - component: {fileID: 6325241535670615869}
   - component: {fileID: 6628440380166716462}
   - component: {fileID: 5418471675244384651}
+  - component: {fileID: 2677946362471650199}
   m_Layer: 5
   m_Name: Recording Status UI
   m_TagString: Untagged
@@ -311,6 +312,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &2677946362471650199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4727466942809425274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a560e3e7adc9be74d97a3cde8420315f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  labelText: {fileID: 7360437988295863532}
+  targetFileText: {fileID: 4432889603218846108}
 --- !u!1 &4866290894834138364
 GameObject:
   m_ObjectHideFlags: 0

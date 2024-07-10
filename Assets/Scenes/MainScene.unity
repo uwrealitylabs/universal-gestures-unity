@@ -392,6 +392,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e41e7a68b0d286247bc5bbc180d1daae, type: 3}
+--- !u!114 &261812149 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2677946362471650199, guid: e41e7a68b0d286247bc5bbc180d1daae, type: 3}
+  m_PrefabInstance: {fileID: 261812148}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a560e3e7adc9be74d97a3cde8420315f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &565963954
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,6 +768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c6157012cef38b4fb232ed0232643d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  recordingStatusUI: {fileID: 261812149}
   gestureName: thumbsup
 --- !u!1 &963194225
 GameObject:
