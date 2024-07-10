@@ -68,7 +68,7 @@ public class JsonWriter : MonoBehaviour
 
             JsonWrite(gestureData);
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
@@ -79,7 +79,7 @@ public class JsonWriter : MonoBehaviour
 
             JsonWrite(gestureData);
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
         }
         else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
     }
