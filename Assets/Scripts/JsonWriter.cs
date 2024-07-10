@@ -48,7 +48,6 @@ public class JsonWriter : MonoBehaviour
         byte[] insertBytes = Encoding.ASCII.GetBytes(jsonString);
         stream.Write(insertBytes);
         Debug.Log("Writing to " + gestureName + ".json: '" + jsonString + "'");
-        recordingStatusUI.targetFile = gestureName + ".json";
         stream.Close();
     }
 
@@ -68,7 +67,7 @@ public class JsonWriter : MonoBehaviour
 
             JsonWrite(gestureData);
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
@@ -79,8 +78,10 @@ public class JsonWriter : MonoBehaviour
 
             JsonWrite(gestureData);
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
         }
         else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
+
+        recordingStatusUI.targetFile = gestureName + ".json";
     }
 }
