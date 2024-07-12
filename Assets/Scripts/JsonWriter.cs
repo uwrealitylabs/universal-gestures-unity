@@ -19,6 +19,7 @@ using UnityEngine;
 
 public class JsonWriter : MonoBehaviour
 {
+    [SerializeField] private RecordingStatusUI recordingStatusUI;
     public string gestureName;
     class GestureData
     {
@@ -50,7 +51,7 @@ public class JsonWriter : MonoBehaviour
         stream.Close();
     }
 
-    void Update()
+    void LateUpdate()
     {
         // When SHIFT or TAB pressed:
         // - Retrieve hand data from TestingSkeleton 
@@ -61,27 +62,26 @@ public class JsonWriter : MonoBehaviour
         {
             GestureData gestureData = new GestureData();
             gestureData.confidence = 1; 
-            //TEMP (Generates random data):
-            gestureData.handData = new float[10];
-            for (int i = 0; i < 10; i++)
-            {
-                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f); 
-            }
-            // 
+
+            gestureData.handData = TestingSkeleton.handData;
+
             JsonWrite(gestureData);
+
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
         } 
         else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
         {
             GestureData gestureData = new GestureData();
             gestureData.confidence = 0; 
-            //TEMP:
-            gestureData.handData = new float[10];
-            for (int i = 0; i < 10; i++)
-            {
-                gestureData.handData[i] = UnityEngine.Random.Range(-10.0f, 10.0f);
-            }
-            // --
+
+            gestureData.handData = TestingSkeleton.handData;
+
             JsonWrite(gestureData);
+
+            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
         }
+        else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
+
+        recordingStatusUI.targetFile = gestureName + ".json";
     }
 }
