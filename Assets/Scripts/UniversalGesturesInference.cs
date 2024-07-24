@@ -14,6 +14,13 @@ public class UniversalGesturesInference : MonoBehaviour {
         LoadWeights("../JsonData/modelWeights.json");
     }
 
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            float inference = GetInference();
+            Debug.Log("Inference: " + inference);
+        }
+    }
+
     void LoadWeights(string filePath) {
         try {
             string jsonString = File.ReadAllText(filePath);
@@ -45,13 +52,18 @@ public class UniversalGesturesInference : MonoBehaviour {
 
     public float GetInference() {
         float[] inputVector = CreateInputVector();
+        // Debug.Log("Input Vector: " + inputVector);
         float output = RunInference(inputVector);
         return output;
     }
 
     float[] CreateInputVector() {
-        List<float> inputVector = TestingSkeleton.handData.ToList();
-        return inputVector.ToArray();
+        float[] inputVector = TestingSkeleton.handData;
+        // Print out inputVector to see if it's correct
+        for (int i = 0; i < inputVector.Length; i++) {
+            Debug.Log("Input Vector[" + i + "]: " + inputVector[i]);
+        }
+        return inputVector;
     }
 
     float RunInference(float[] inputVector) {
