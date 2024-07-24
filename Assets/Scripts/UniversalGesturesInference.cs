@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq; // idk if its good to have this installed
 
 public class UniversalGesturesInference : MonoBehaviour {
@@ -22,6 +23,7 @@ public class UniversalGesturesInference : MonoBehaviour {
 
             foreach (var item in json) {
                 string key = item.Key;
+
                 JArray valueArray = (JArray)item.Value;
                 int rows = valueArray.Count;
                 int cols = valueArray[0].Count();
@@ -48,17 +50,7 @@ public class UniversalGesturesInference : MonoBehaviour {
     }
 
     float[] CreateInputVector() {
-        List<float> inputVector = new List<float>();
-
-        // Im assuming that handObject has a component HandData (the unlabeled data from the training jsons)
-        // check if this is right
-        HandData handData = handObject.GetComponent<HandData>();
-        if (handData != null) {
-            inputVector.AddRange(handData.GetHandData());
-        } else {
-            Debug.LogError("HandData script is missing on the handObject.");
-        }
-
+        List<float> inputVector = TestingSkeleton.handData.ToList();
         return inputVector.ToArray();
     }
 
@@ -70,7 +62,7 @@ public class UniversalGesturesInference : MonoBehaviour {
             for (int j = 0; j < inputVector.Length; j++) {
                 fc1Output[i] += inputVector[j] * weights["fc1.weight"][i, j];
             }
-            fc1Output[i] = Mathf.Tanh(fc1Output[i]); // Activation function (not too sure, test to see if it works)
+            fc1Output[i] = (float)Math.Tanh(fc1Output[i]); // Activation function (not too sure, test to see if it works)
         }
 
         float[] fc2Output = new float[weights["fc2.weight"].GetLength(0)];
@@ -79,7 +71,7 @@ public class UniversalGesturesInference : MonoBehaviour {
             for (int j = 0; j < fc1Output.Length; j++) {
                 fc2Output[i] += fc1Output[j] * weights["fc2.weight"][i, j];
             }
-            fc2Output[i] = Mathf.Tanh(fc2Output[i]); // Activation function (not sure same as above)
+            fc2Output[i] = (float)Math.Tanh(fc2Output[i]); // Activation function (not sure same as above)
         }
 
         return fc2Output[0];
