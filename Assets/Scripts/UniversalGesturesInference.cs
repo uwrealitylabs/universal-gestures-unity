@@ -5,44 +5,30 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq; // idk if its good to have this installed
 using Unity.Barracuda;
+using TMPro;
 
 public class UniversalGesturesInference : MonoBehaviour
 {
     public NNModel modelAsset;
     private Model m_RuntimeModel;
     public GameObject handObject;
+    private float inferenceTimer;
+    private IWorker worker;
     public string modelName;
     private Dictionary<string, float[,]> weights;
+    private Tensor inputTensor;
+    private Tensor outputTensor;
+    public float inferenceOutput { get; private set; }
 
     void Start()
     {
         // see docs for more information on this script: https://docs.unity3d.com/Packages/com.unity.barracuda%401.0/manual/GettingStarted.html
         Debug.Log("Testing Inference");
+        inferenceTimer = 0;
         m_RuntimeModel = ModelLoader.Load(modelAsset);
-        var worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
-        Tensor input = new Tensor(1, 0, 0, 17);
-        // initalize tensor with some values
-        input[0] = 0.1f;
-        input[1] = 0.2f;
-        input[2] = 0.3f;
-        input[3] = 0.4f;
-        input[4] = 0.5f;
-        input[5] = 0.6f;
-        input[6] = 0.7f;
-        input[7] = 0.8f;
-        input[8] = 0.9f;
-        input[9] = 0.1f;
-        input[10] = 0.2f;
-        input[11] = 0.3f;
-        input[12] = 0.4f;
-        input[13] = 0.5f;
-        input[14] = 0.6f;
-        input[15] = 0.7f;
-        input[16] = 0.8f;
-        worker.Execute(input);
-        Tensor output = worker.PeekOutput();
-        Debug.Log("Output: " + output[0]);
-        input.Dispose();
+        worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
+        inputTensor = new Tensor(1, 0, 0, 17);
+
 
 
         // LoadWeights("../JsonData/modelWeights.json");
@@ -50,11 +36,33 @@ public class UniversalGesturesInference : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        // run inference every second
+        inferenceTimer += Time.deltaTime;
+        if (inferenceTimer >= 1)
         {
-            float inference = GetInference();
-            Debug.Log("Inference: " + inference);
+            inferenceTimer = 0;
+            // update input tensor with new hand data
+            for (int i = 0; i < TestingSkeleton.handData.Length; i++)
+            {
+                inputTensor[i] = TestingSkeleton.handData[i];
+            }
+            worker.Execute(inputTensor);
+            outputTensor = worker.PeekOutput();
+            inferenceOutput = outputTensor[0];
+            Debug.Log("Inference Output: " + inferenceOutput);
         }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     float inference = GetInference();
+        //     Debug.Log("Inference: " + inference);
+        // }
+    }
+
+    void OnDestroy()
+    {
+        inputTensor.Dispose();
+        outputTensor.Dispose();
+        worker.Dispose();
     }
 
     void LoadWeights(string filePath)
