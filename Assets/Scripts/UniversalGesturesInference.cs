@@ -19,6 +19,7 @@ public class UniversalGesturesInference : MonoBehaviour
     private Tensor inputTensor;
     private Tensor outputTensor;
     public float inferenceOutput { get; private set; }
+    [SerializeField] private TextMeshProUGUI inferenceText;
 
     void Start()
     {
@@ -50,6 +51,7 @@ public class UniversalGesturesInference : MonoBehaviour
             outputTensor = worker.PeekOutput();
             inferenceOutput = outputTensor[0];
             Debug.Log("Inference Output: " + inferenceOutput);
+            inferenceText.text = "Inference Output: " + inferenceOutput;
         }
         // if (Input.GetKeyDown(KeyCode.Space))
         // {
@@ -65,6 +67,7 @@ public class UniversalGesturesInference : MonoBehaviour
         worker.Dispose();
     }
 
+    // Below are deprecated methods for manual inference
     void LoadWeights(string filePath)
     {
         try
