@@ -30,7 +30,7 @@ public class UniversalGesturesInference : MonoBehaviour
         SD.ProcessStartInfo start = new SD.ProcessStartInfo();
         // change FileName to the path of your python3 executable (virtual env is recommended)
         start.FileName = "/Users/brianzhang/venv/bin/python3";
-        start.Arguments = "Assets/Scripts/Python/test.py";
+        start.Arguments = "Assets/Scripts/Python/model.py";
         start.UseShellExecute = false;
         start.RedirectStandardOutput = true;
         using (SD.Process process = SD.Process.Start(start))
