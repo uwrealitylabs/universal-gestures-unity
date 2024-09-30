@@ -10,6 +10,7 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHand;
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
+    public TransformRecognizerActiveState transformRecognizerActiveState;
     public const int NUM_FEATURES = 17;
     public static float[] handData;
 
@@ -50,9 +51,12 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
+        float wristUp = transformRecognizerActiveState.Active ? 1.0f : 0.0f;
+        // float wristUp = 5.0f;
+
         // Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
 
         // Add values to JsonWriter.GestureData.handData
-        handData = new [] {thumbFingerCurl, thumbFingerAbduction, indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition};
+        handData = new [] {thumbFingerCurl, thumbFingerAbduction, indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition, wristUp};
     }   
 }
