@@ -10,6 +10,7 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHand;
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
+    public Transform wristTransform;
     public TransformRecognizerActiveState transformRecognizerActiveState;
     public const int NUM_FEATURES = 17;
     public static float[] handData;
@@ -35,7 +36,7 @@ public class TestingSkeleton : MonoBehaviour
         float thumbFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
         float thumbFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
         // Flexion, Opposition not available on thumb
-        
+
         float middleFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
         float middleFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
         float middleFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
@@ -52,11 +53,40 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
         float wristUp = transformRecognizerActiveState.Active ? 1.0f : 0.0f;
+
+        Quaternion wristRotation = wristTransform.localRotation;
+        Vector3 wristEulerAngles = wristRotation.eulerAngles;
         // float wristUp = 5.0f;
+        float wristFlexion = wristEulerAngles.x;
+        float wristDeviation = wristEulerAngles.y;
+        float wristTwist = wristEulerAngles.z;
+        Debug.Log($"Wrist Flexion: {wristFlexion}, Deviation: {wristDeviation}, Twist: {wristTwist}");
 
         // Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
 
         // Add values to JsonWriter.GestureData.handData
-        handData = new [] {thumbFingerCurl, thumbFingerAbduction, indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition, wristUp};
-    }   
+        handData = new[] {
+            thumbFingerCurl,
+            thumbFingerAbduction,
+            indexFingerCurl,
+            indexFingerAbduction,
+            indexFingerFlexion,
+            indexFingerOpposition,
+            middleFingerCurl,
+            middleFingerAbduction,
+            middleFingerFlexion,
+            middleFingerOpposition,
+            ringFingerCurl,
+            ringFingerAbduction,
+            ringFingerFlexion,
+            ringFingerOpposition,
+            pinkyFingerCurl,
+            pinkyFingerFlexion,
+            pinkyFingerOpposition,
+            wristUp,
+            wristFlexion,
+            wristDeviation,
+            wristTwist
+        };
+    }
 }
