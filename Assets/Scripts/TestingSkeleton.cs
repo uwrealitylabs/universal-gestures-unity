@@ -10,6 +10,8 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHand;
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
+    private TransformFeatureStateProvider handTransformFeatureProvider;
+    private TransformConfig handTransformConfig;
     public Transform wristTransform;
     public TransformRecognizerActiveState transformRecognizerActiveState;
     public const int NUM_FEATURES = 17;
@@ -22,6 +24,9 @@ public class TestingSkeleton : MonoBehaviour
         // int currentBones = skeleton.GetCurrentNumBones();
         // Debug.Log("Current number of bones: " + currentBones);
 
+        handTransformConfig = new();
+
+        handTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
         rightFingersFeatureProvider = rightHandFeature.GetComponent<FingerFeatureStateProvider>();
     }
 
@@ -52,15 +57,25 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
-        float wristUp = transformRecognizerActiveState.Active ? 1.0f : 0.0f;
+        float wristUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristUp) ?? 0.0f;
+        float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
+        float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
+        float palmUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmUp) ?? 0.0f;
+        float palmTowardsFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
+        float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
+        float fingersUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersUp) ?? 0.0f;
+        float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
+        float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
 
-        Quaternion wristRotation = wristTransform.localRotation;
-        Vector3 wristEulerAngles = wristRotation.eulerAngles;
+        Debug.Log("Wrist Up: " + wristUp + ", Wrist Down: " + wristDown + ", Palm Down: " + palmDown + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Palm Away From Face: " + palmAwayFromFace + ", Fingers Up: " + fingersUp + ", Fingers Down: " + fingersDown + ", Pinch Clear: " + pinchClear);
+
+        // Quaternion wristRotation = wristTransform.localRotation;
+        // Vector3 wristEulerAngles = wristRotation.eulerAngles;
         // float wristUp = 5.0f;
-        float wristFlexion = wristEulerAngles.x;
-        float wristDeviation = wristEulerAngles.y;
-        float wristTwist = wristEulerAngles.z;
-        Debug.Log($"Wrist Flexion: {wristFlexion}, Deviation: {wristDeviation}, Twist: {wristTwist}");
+        // float wristFlexion = wristEulerAngles.x;
+        // float wristDeviation = wristEulerAngles.y;
+        // float wristTwist = wristEulerAngles.z;
+        // Debug.Log($"Wrist Flexion: {wristFlexion}, Deviation: {wristDeviation}, Twist: {wristTwist}");
 
         // Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
 
@@ -84,9 +99,14 @@ public class TestingSkeleton : MonoBehaviour
             pinkyFingerFlexion,
             pinkyFingerOpposition,
             wristUp,
-            wristFlexion,
-            wristDeviation,
-            wristTwist
+            wristDown,
+            palmDown,
+            palmUp,
+            palmTowardsFace,
+            palmAwayFromFace,
+            fingersUp,
+            fingersDown,
+            pinchClear
         };
     }
 }
