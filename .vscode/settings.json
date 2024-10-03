@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "universal-gestures-unity.sln"
+    "dotnet.defaultSolution": "universal-gestures-unity.sln",
+    "dotnet.preferCSharpExtension": true
 }
