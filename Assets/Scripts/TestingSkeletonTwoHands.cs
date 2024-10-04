@@ -98,20 +98,30 @@ public class TestingSkeletonTwoHands : MonoBehaviour
         float xDiff = rightX - leftX;
         float yDiff = rightY - leftY;
         float zDiff = rightZ - leftZ;
-        float leftRotation1 = leftHand.transform.rotation[0];
-        float leftRotation2 = leftHand.transform.rotation[1];
-        float leftRotation3 = leftHand.transform.rotation[2];
-        float leftRotation4 = leftHand.transform.rotation[3];
-        float rightRotation1 = rightHand.transform.rotation[0];
-        float rightRotation2 = rightHand.transform.rotation[1];
-        float rightRotation3 = rightHand.transform.rotation[2];
-        float rightRotation4 = rightHand.transform.rotation[3];
+        float distance = Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
+
+        float leftRotationX = leftHand.transform.rotation.eulerAngles[0];
+        float leftRotationY = leftHand.transform.rotation.eulerAngles[1];
+        float leftRotationZ = leftHand.transform.rotation.eulerAngles[2];
+        float rightRotationX = rightHand.transform.rotation.eulerAngles[0];
+        float rightRotationY = rightHand.transform.rotation.eulerAngles[1];
+        float rightRotationZ = rightHand.transform.rotation.eulerAngles[2];
+        float rotationXDiff = rightRotationX - leftRotationX;
+        float rotationYDiff = rightRotationY - leftRotationY;
+        float rotationZDiff = rightRotationZ - leftRotationZ;
+        float rotationXSin = Mathf.Sin(rotationXDiff);
+        float rotationXCos = Mathf.Cos(rotationXDiff);
+        float rotationYSin = Mathf.Sin(rotationYDiff);
+        float rotationYCos = Mathf.Cos(rotationYDiff);
+        float rotationZSin = Mathf.Sin(rotationZDiff);
+        float rotationZCos = Mathf.Cos(rotationZDiff);
+        Debug.Log("Rotation X Diff: " + rotationXDiff + ", Rotation Y Diff: " + rotationYDiff + ", Rotation Z Diff: " + rotationZDiff);
 
         // Debug.Log("Index finger values: " + rightIndexFingerCurl + ", " + rightIndexFingerAbduction + ", " + rightIndexFingerFlexion + ", " + rightIndexFingerOpposition);
 
         // Add values to JsonWriter.GestureData.handData
         handData = new[] { rightThumbFingerCurl, rightThumbFingerAbduction, rightIndexFingerCurl, rightIndexFingerAbduction, rightIndexFingerFlexion, rightIndexFingerOpposition, rightMiddleFingerCurl, rightMiddleFingerAbduction, rightMiddleFingerFlexion, rightMiddleFingerOpposition, rightRingFingerCurl, rightRingFingerAbduction, rightRingFingerFlexion, rightRingFingerOpposition, rightPinkyFingerCurl, rightPinkyFingerFlexion, rightPinkyFingerOpposition,
                    leftThumbFingerCurl, leftThumbFingerAbduction, leftIndexFingerCurl, leftIndexFingerAbduction, leftIndexFingerFlexion, leftIndexFingerOpposition, leftMiddleFingerCurl, leftMiddleFingerAbduction, leftMiddleFingerFlexion, leftMiddleFingerOpposition, leftRingFingerCurl, leftRingFingerAbduction, leftRingFingerFlexion, leftRingFingerOpposition, leftPinkyFingerCurl, leftPinkyFingerFlexion, leftPinkyFingerOpposition,
-                   xDiff, yDiff, zDiff, leftRotation1, leftRotation2, leftRotation3, leftRotation4, rightRotation1, rightRotation2, rightRotation3, rightRotation4};
+                   xDiff, yDiff, zDiff, distance, rotationXSin, rotationXCos, rotationYSin, rotationYCos, rotationZSin, rotationZCos };
     }
 }

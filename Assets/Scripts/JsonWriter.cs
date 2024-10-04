@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using TMPro;
 
 
 // -- JSON File Writer --
@@ -26,22 +27,33 @@ public class JsonWriter : MonoBehaviour
         public int confidence; // confidence of gesture (label)
         public float[] handData; // float array of hand position data (features)
     }
-    
+
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
     void JsonWrite(GestureData gestureData)
     {
         string prefix = ",\n    "; // Prefix & Suffix for each entry for proper json formatting
         string suffix = "\n]";
         string jsonDir = Application.dataPath + "/../JsonData/"; // Current directory to save json files
-        string path = jsonDir + gestureName + ".json"; 
+        // Check if running on Android
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            // Save to persistent data path on Android to avoid permission issues and persist data
+            jsonDir = Application.persistentDataPath + "/JsonData/";
+            // Create JsonData directory if it doesn't exist
+            if (!Directory.Exists(jsonDir))
+            {
+                Directory.CreateDirectory(jsonDir);
+            }
+        }
+        string path = jsonDir + gestureName + ".json";
         if (!File.Exists(path))
         {
-            File.Create(path); 
+            File.Create(path);
         }
         FileStream stream = new FileStream(path, FileMode.Open);
         if (stream.Length == 0)
         {
-            prefix = "[\n    "; 
+            prefix = "[\n    ";
         }
         stream.Position = Math.Max(stream.Length - 2, 0);
         string jsonString = prefix + JsonUtility.ToJson(gestureData) + suffix;
@@ -58,29 +70,39 @@ public class JsonWriter : MonoBehaviour
         // - If SHIFT, set confidence to 1, else 0
         // - Write data to json file
 
-        if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.Tab))
-        {
-            GestureData gestureData = new GestureData();
-            gestureData.confidence = 1; 
+        // Temporary code to test two hand data collection
+        // Automatically starts recording positive data
+        GestureData gestureData = new GestureData();
+        gestureData.confidence = 1;
+        // gestureData.handData = TestingSkeleton.handData;
+        // replace above line with below line to test two hand data collection
+        gestureData.handData = TestingSkeletonTwoHands.handData;
+        JsonWrite(gestureData);
+        recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
 
-            gestureData.handData = TestingSkeleton.handData;
+        // if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.Tab))
+        // {
+        //     GestureData gestureData = new GestureData();
+        //     gestureData.confidence = 1;
 
-            JsonWrite(gestureData);
+        //     gestureData.handData = TestingSkeleton.handData;
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
-        } 
-        else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
-        {
-            GestureData gestureData = new GestureData();
-            gestureData.confidence = 0; 
+        //     JsonWrite(gestureData);
 
-            gestureData.handData = TestingSkeleton.handData;
+        //     recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
+        // }
+        // else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
+        // {
+        //     GestureData gestureData = new GestureData();
+        //     gestureData.confidence = 0;
 
-            JsonWrite(gestureData);
+        //     gestureData.handData = TestingSkeleton.handData;
 
-            recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
-        }
-        else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
+        //     JsonWrite(gestureData);
+
+        //     recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
+        // }
+        // else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
 
         recordingStatusUI.targetFile = gestureName + ".json";
     }

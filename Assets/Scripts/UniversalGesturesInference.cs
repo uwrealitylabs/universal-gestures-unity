@@ -48,7 +48,7 @@ public class UniversalGesturesInference : MonoBehaviour
         inferenceTimer = 0;
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
-        inputTensor = new Tensor(1, 0, 0, 17);
+        inputTensor = new Tensor(1, 0, 0, 44);
 
 
 
@@ -63,9 +63,9 @@ public class UniversalGesturesInference : MonoBehaviour
         {
             inferenceTimer = 0;
             // update input tensor with new hand data
-            for (int i = 0; i < TestingSkeleton.handData.Length; i++)
+            for (int i = 0; i < TestingSkeletonTwoHands.handData.Length; i++)
             {
-                inputTensor[i] = TestingSkeleton.handData[i];
+                inputTensor[i] = TestingSkeletonTwoHands.handData[i];
             }
             worker.Execute(inputTensor);
             outputTensor = worker.PeekOutput();
