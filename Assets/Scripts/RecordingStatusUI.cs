@@ -16,7 +16,7 @@ public class RecordingStatusUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI targetFileText;
 
     public RecordingStatus recordingStatus;
-    public string targetFile; 
+    public string targetFile;
 
 
     void Update()
