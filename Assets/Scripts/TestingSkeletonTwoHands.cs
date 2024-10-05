@@ -19,7 +19,7 @@ public class TestingSkeletonTwoHands : MonoBehaviour
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider leftFingersFeatureProvider;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
-    public const int NUM_FEATURES = 17;
+    public const int TWO_HAND_NUM_FEATURES = 44;
     public static float[] handData;
 
     // Start is called before the first frame update

@@ -11,6 +11,8 @@ using TMPro;
 // UniversalGesturesInference.cs
 // This script is used to load a trained neural network model and run inference on hand data.
 
+
+
 public class UniversalGesturesInference : MonoBehaviour
 {
     public NNModel modelAsset;
@@ -18,6 +20,7 @@ public class UniversalGesturesInference : MonoBehaviour
     public GameObject handObject;
     private float inferenceTimer = 0;
     public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
+    public HandMode inferenceHandMode = HandMode.TwoHands; // whether to run inference using data from one hand or two hands
     private IWorker worker;
     public string modelName;
     private Dictionary<string, float[,]> weights;
@@ -31,7 +34,16 @@ public class UniversalGesturesInference : MonoBehaviour
         // see docs for more information on this script: https://docs.unity3d.com/Packages/com.unity.barracuda%401.0/manual/GettingStarted.html
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
-        inputTensor = new Tensor(1, 0, 0, 44);
+        int modelInputSize;
+        if (inferenceHandMode == HandMode.OneHand)
+        {
+            modelInputSize = TestingSkeleton.ONE_HAND_NUM_FEATURES;
+        }
+        else
+        {
+            modelInputSize = TestingSkeletonTwoHands.TWO_HAND_NUM_FEATURES;
+        }
+        inputTensor = new Tensor(1, 0, 0, modelInputSize);
     }
 
     void Update()
@@ -41,10 +53,20 @@ public class UniversalGesturesInference : MonoBehaviour
         if (inferenceTimer >= inferenceInterval)
         {
             inferenceTimer = 0;
-            // update input tensor with new hand data
-            for (int i = 0; i < TestingSkeletonTwoHands.handData.Length; i++)
+            // select hand data based on inferenceHandMode
+            float[] handData;
+            if (inferenceHandMode == HandMode.OneHand)
             {
-                inputTensor[i] = TestingSkeletonTwoHands.handData[i];
+                handData = TestingSkeleton.handData;
+            }
+            else
+            {
+                handData = TestingSkeletonTwoHands.handData;
+            }
+            // update input tensor with new hand data
+            for (int i = 0; i < handData.Length; i++)
+            {
+                inputTensor[i] = handData[i];
             }
             worker.Execute(inputTensor);
             outputTensor = worker.PeekOutput();

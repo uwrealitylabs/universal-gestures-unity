@@ -26,7 +26,7 @@ using TMPro;
 
 
 // Tracks whether we are writing data for one hand or two hands.
-public enum RecordingHandMode
+public enum HandMode
 {
     OneHand,
     TwoHands
@@ -40,7 +40,7 @@ public class JsonWriter : MonoBehaviour
     private float startRecordingTime; // Time when data recording started
     private string recordingFileName; // Name of file to save data to
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
-    public RecordingHandMode recordingHandMode = RecordingHandMode.TwoHands;
+    public HandMode recordingHandMode = HandMode.TwoHands;
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
@@ -101,11 +101,11 @@ public class JsonWriter : MonoBehaviour
             GestureData gestureData = new GestureData();
 
             // Get hand data source, which depends on recordingHandMode
-            if (recordingHandMode == RecordingHandMode.OneHand)
+            if (recordingHandMode == HandMode.OneHand)
             {
                 gestureData.handData = TestingSkeleton.handData;
             }
-            else if (recordingHandMode == RecordingHandMode.TwoHands)
+            else if (recordingHandMode == HandMode.TwoHands)
             {
                 gestureData.handData = TestingSkeletonTwoHands.handData;
             }
@@ -163,12 +163,12 @@ public class JsonWriter : MonoBehaviour
     // Sets recording hand mode to one hand
     public void SetRecordingHandModeOneHand()
     {
-        recordingHandMode = RecordingHandMode.OneHand;
+        recordingHandMode = HandMode.OneHand;
     }
 
     // Sets recording hand mode to two hands
     public void SetRecordingHandModeTwoHands()
     {
-        recordingHandMode = RecordingHandMode.TwoHands;
+        recordingHandMode = HandMode.TwoHands;
     }
 }
