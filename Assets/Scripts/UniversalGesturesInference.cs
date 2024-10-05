@@ -17,6 +17,7 @@ public class UniversalGesturesInference : MonoBehaviour
     private Model m_RuntimeModel;
     public GameObject handObject;
     private float inferenceTimer = 0;
+    public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
     private IWorker worker;
     public string modelName;
     private Dictionary<string, float[,]> weights;
@@ -35,9 +36,9 @@ public class UniversalGesturesInference : MonoBehaviour
 
     void Update()
     {
-        // run inference every second
         inferenceTimer += Time.deltaTime;
-        if (inferenceTimer >= 1)
+        // only run inference every inferenceInterval seconds
+        if (inferenceTimer >= inferenceInterval)
         {
             inferenceTimer = 0;
             // update input tensor with new hand data
