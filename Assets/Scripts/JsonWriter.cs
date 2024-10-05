@@ -159,4 +159,16 @@ public class JsonWriter : MonoBehaviour
     {
         recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
     }
+
+    // Sets recording hand mode to one hand
+    public void SetRecordingHandModeOneHand()
+    {
+        recordingHandMode = RecordingHandMode.OneHand;
+    }
+
+    // Sets recording hand mode to two hands
+    public void SetRecordingHandModeTwoHands()
+    {
+        recordingHandMode = RecordingHandMode.TwoHands;
+    }
 }
