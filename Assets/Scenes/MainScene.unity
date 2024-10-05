@@ -1835,6 +1835,7 @@ MonoBehaviour:
     type: 3}
   handObject: {fileID: 1127312767}
   inferenceInterval: 0.5
+  inferenceHandMode: 1
   modelName: 
   inferenceText: {fileID: 5139335824824062507}
 --- !u!114 &959056928
