@@ -1557,9 +1557,6 @@ MonoBehaviour:
   handObject: {fileID: 1127312767}
   modelName: 
   inferenceText: {fileID: 5139335824824062507}
-  d1: {fileID: 1819989530}
-  d2: {fileID: 506986139}
-  d3: {fileID: 1017423791}
 --- !u!114 &959056928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3025,7 +3022,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 959056926}
         m_TargetAssemblyTypeName: JsonWriter, Assembly-CSharp
-        m_MethodName: StartRecordingPositive
+        m_MethodName: StartRecordingPositiveIntent
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3433,7 +3430,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 959056926}
         m_TargetAssemblyTypeName: JsonWriter, Assembly-CSharp
-        m_MethodName: StartRecordingNegative
+        m_MethodName: StartRecordingNegativeIntent
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

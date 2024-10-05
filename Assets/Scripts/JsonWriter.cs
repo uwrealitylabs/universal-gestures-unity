@@ -27,10 +27,13 @@ public enum RecordingHandMode
 public class JsonWriter : MonoBehaviour
 {
     [SerializeField] private RecordingStatusUI recordingStatusUI;
+    private RecordingStatus desiredRecordingStatus; // Recording status to start recording
+    private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
     private string recordingFileName; // Name of file to save data to
     public RecordingHandMode recordingHandMode = RecordingHandMode.TwoHands;
     public float recordingDuration = 10.0f; // Duration of recording in seconds
+    public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
     class GestureData
     {
@@ -76,6 +79,13 @@ public class JsonWriter : MonoBehaviour
 
     void LateUpdate()
     {
+        // Start recording if timeToStartRecording is set and current time is greater than timeToStartRecording
+        if (timeToStartRecording > 0 && Time.time >= timeToStartRecording)
+        {
+            StartRecording();
+            timeToStartRecording = -1;
+        }
+
         // Record data if recordingStatus is not NotRecording
         if (recordingStatusUI.recordingStatus != RecordingStatus.NotRecording)
         {
@@ -111,17 +121,23 @@ public class JsonWriter : MonoBehaviour
         }
     }
 
-    public void StartRecordingPositive()
+
+
+    public void StartRecordingPositiveIntent()
     {
-        recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
-        recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
-        recordingStatusUI.targetFile = recordingFileName;
-        startRecordingTime = Time.time;
+        desiredRecordingStatus = RecordingStatus.RecordingPositive;
+        timeToStartRecording = Time.time + recordingStartDelay;
     }
 
-    public void StartRecordingNegative()
+    public void StartRecordingNegativeIntent()
     {
-        recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
+        desiredRecordingStatus = RecordingStatus.RecordingNegative;
+        timeToStartRecording = Time.time + recordingStartDelay;
+    }
+
+    public void StartRecording()
+    {
+        recordingStatusUI.recordingStatus = desiredRecordingStatus;
         recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
         recordingStatusUI.targetFile = recordingFileName;
         startRecordingTime = Time.time;
