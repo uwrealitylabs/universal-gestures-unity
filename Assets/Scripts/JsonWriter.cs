@@ -6,6 +6,15 @@ using TMPro;
 
 
 // -- JSON File Writer --
+// Press the Rec. Pos. or Rec. Neg. buttons when scene is running to
+// start recording positive or negative data.
+
+// Upon pressing the buttons, recording will start after a delay of recordingStartDelay seconds
+// and will continue for recordingDuration seconds.
+
+// Each recording is saved to its own json file with name "{gestureName}_{timestamp}.json"
+// in JsonData directory.
+
 // JSON files currently saved at: /universal-gestures-unity/JsonData/{gestureName}.json
 // JSON file will look like this:
 // [
@@ -14,10 +23,9 @@ using TMPro;
 //    ...
 // ]
 
-// SHIFT to record positive data (confidence = 1)
-// TAB to record negative data (confidence = 0)
-// If SHIFT and TAB presseed at same time, no data will be recorded
 
+
+// Tracks whether we are writing data for one hand or two hands.
 public enum RecordingHandMode
 {
     OneHand,
@@ -31,6 +39,7 @@ public class JsonWriter : MonoBehaviour
     private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
     private string recordingFileName; // Name of file to save data to
+    // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
     public RecordingHandMode recordingHandMode = RecordingHandMode.TwoHands;
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
@@ -122,19 +131,21 @@ public class JsonWriter : MonoBehaviour
     }
 
 
-
+    // Begins delay before positive data recording starts
     public void StartRecordingPositiveIntent()
     {
         desiredRecordingStatus = RecordingStatus.RecordingPositive;
         timeToStartRecording = Time.time + recordingStartDelay;
     }
 
+    // Begins delay before negative data recording starts
     public void StartRecordingNegativeIntent()
     {
         desiredRecordingStatus = RecordingStatus.RecordingNegative;
         timeToStartRecording = Time.time + recordingStartDelay;
     }
 
+    // Begins recording data
     public void StartRecording()
     {
         recordingStatusUI.recordingStatus = desiredRecordingStatus;
@@ -143,6 +154,7 @@ public class JsonWriter : MonoBehaviour
         startRecordingTime = Time.time;
     }
 
+    // Stops recording data
     public void StopRecording()
     {
         recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;

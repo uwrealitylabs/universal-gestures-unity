@@ -5,6 +5,12 @@ using Oculus.Interaction;
 using Oculus.Interaction.PoseDetection;
 using Oculus.Interaction.Input;
 
+
+// TestingSkeletonTwoHands.cs
+// This script is used to expose the finger features of the left and right hands,
+// as well as the relative features between the two hands.
+
+
 public class TestingSkeletonTwoHands : MonoBehaviour
 {
     public GameObject leftHand;

@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq; // idk if its good to have this installed
 using Unity.Barracuda;
 using TMPro;
 
+// UniversalGesturesInference.cs
+// This script is used to load a trained neural network model and run inference on hand data.
+
 public class UniversalGesturesInference : MonoBehaviour
 {
     public NNModel modelAsset;
@@ -48,11 +51,6 @@ public class UniversalGesturesInference : MonoBehaviour
             Debug.Log("Inference Output: " + inferenceOutput);
             inferenceText.text = "Inference Output: " + inferenceOutput;
         }
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     float inference = GetInference();
-        //     Debug.Log("Inference: " + inference);
-        // }
     }
 
     void OnDestroy()
@@ -62,7 +60,13 @@ public class UniversalGesturesInference : MonoBehaviour
         worker.Dispose();
     }
 
+
+
+
+
+    // ============================================================
     // Below are deprecated methods for manual inference
+    // ============================================================
     void LoadWeights(string filePath)
     {
         try
