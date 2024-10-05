@@ -18,9 +18,19 @@ using TMPro;
 // TAB to record negative data (confidence = 0)
 // If SHIFT and TAB presseed at same time, no data will be recorded
 
+public enum RecordingHandMode
+{
+    OneHand,
+    TwoHands
+}
+
 public class JsonWriter : MonoBehaviour
 {
     [SerializeField] private RecordingStatusUI recordingStatusUI;
+    private float startRecordingTime; // Time when data recording started
+    private string recordingFileName; // Name of file to save data to
+    public RecordingHandMode recordingHandMode = RecordingHandMode.TwoHands;
+    public float recordingDuration = 10.0f; // Duration of recording in seconds
     public string gestureName;
     class GestureData
     {
@@ -45,7 +55,8 @@ public class JsonWriter : MonoBehaviour
                 Directory.CreateDirectory(jsonDir);
             }
         }
-        string path = jsonDir + gestureName + ".json";
+        // record file name includes timestamp
+        string path = jsonDir + recordingFileName;
         if (!File.Exists(path))
         {
             File.Create(path);
@@ -65,45 +76,59 @@ public class JsonWriter : MonoBehaviour
 
     void LateUpdate()
     {
-        // When SHIFT or TAB pressed:
-        // - Retrieve hand data from TestingSkeleton 
-        // - If SHIFT, set confidence to 1, else 0
-        // - Write data to json file
+        // Record data if recordingStatus is not NotRecording
+        if (recordingStatusUI.recordingStatus != RecordingStatus.NotRecording)
+        {
+            GestureData gestureData = new GestureData();
 
-        // Temporary code to test two hand data collection
-        // Automatically starts recording positive data
-        GestureData gestureData = new GestureData();
-        gestureData.confidence = 1;
-        // gestureData.handData = TestingSkeleton.handData;
-        // replace above line with below line to test two hand data collection
-        gestureData.handData = TestingSkeletonTwoHands.handData;
-        JsonWrite(gestureData);
+            // Get hand data source, which depends on recordingHandMode
+            if (recordingHandMode == RecordingHandMode.OneHand)
+            {
+                gestureData.handData = TestingSkeleton.handData;
+            }
+            else if (recordingHandMode == RecordingHandMode.TwoHands)
+            {
+                gestureData.handData = TestingSkeletonTwoHands.handData;
+            }
+
+            // Set confidence based on recordingStatus (positive or negative data)
+            if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingPositive)
+            {
+                gestureData.confidence = 1;
+            }
+            else if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingNegative)
+            {
+                gestureData.confidence = 0;
+            }
+
+            JsonWrite(gestureData);
+
+            // If time since recording started is greater than duration, stop recording
+            if (Time.time - startRecordingTime >= recordingDuration)
+            {
+                StopRecording();
+            }
+        }
+    }
+
+    public void StartRecordingPositive()
+    {
         recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
+        recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+        recordingStatusUI.targetFile = recordingFileName;
+        startRecordingTime = Time.time;
+    }
 
-        // if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.Tab))
-        // {
-        //     GestureData gestureData = new GestureData();
-        //     gestureData.confidence = 1;
+    public void StartRecordingNegative()
+    {
+        recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
+        recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+        recordingStatusUI.targetFile = recordingFileName;
+        startRecordingTime = Time.time;
+    }
 
-        //     gestureData.handData = TestingSkeleton.handData;
-
-        //     JsonWrite(gestureData);
-
-        //     recordingStatusUI.recordingStatus = RecordingStatus.RecordingPositive;
-        // }
-        // else if (Input.GetKey(KeyCode.Tab) && !Input.GetKey(KeyCode.LeftShift))
-        // {
-        //     GestureData gestureData = new GestureData();
-        //     gestureData.confidence = 0;
-
-        //     gestureData.handData = TestingSkeleton.handData;
-
-        //     JsonWrite(gestureData);
-
-        //     recordingStatusUI.recordingStatus = RecordingStatus.RecordingNegative;
-        // }
-        // else recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
-
-        recordingStatusUI.targetFile = gestureName + ".json";
+    public void StopRecording()
+    {
+        recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
     }
 }
