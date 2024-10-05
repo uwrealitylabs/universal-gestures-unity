@@ -647,7 +647,7 @@ PrefabInstance:
     - target: {fileID: 5919106134362994298, guid: 5fca3702cdf1a214a94e69dcfa704e17,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.341
+      value: -0.29
       objectReference: {fileID: 0}
     - target: {fileID: 5919106134362994298, guid: 5fca3702cdf1a214a94e69dcfa704e17,
         type: 3}
@@ -1540,10 +1540,6 @@ MonoBehaviour:
   recordingHandMode: 1
   recordingDuration: 10
   gestureName: thumbsup
-  text1: {fileID: 1819989530}
-  text2: {fileID: 506986139}
-  text3: {fileID: 1017423791}
-  text4: {fileID: 697119545}
 --- !u!114 &959056927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1561,6 +1557,9 @@ MonoBehaviour:
   handObject: {fileID: 1127312767}
   modelName: 
   inferenceText: {fileID: 5139335824824062507}
+  d1: {fileID: 1819989530}
+  d2: {fileID: 506986139}
+  d3: {fileID: 1017423791}
 --- !u!114 &959056928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2315,7 +2314,7 @@ PrefabInstance:
     - target: {fileID: 5919106134362994298, guid: 5fca3702cdf1a214a94e69dcfa704e17,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.37
+      value: -0.291
       objectReference: {fileID: 0}
     - target: {fileID: 5919106134362994298, guid: 5fca3702cdf1a214a94e69dcfa704e17,
         type: 3}
