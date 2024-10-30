@@ -10,7 +10,7 @@ public class FingerStatsDisplay : MonoBehaviour
     void Start()
     {
         // Ensure both arrays are of the same length
-        if (textMeshObjects.Length != TestingSkeleton.NUM_FEATURES)
+        if (textMeshObjects.Length != TestingSkeleton.ONE_HAND_NUM_FEATURES)
         {
             Debug.LogError("TextMeshPro objects and hand data arrays must be of the same length!");
             return;

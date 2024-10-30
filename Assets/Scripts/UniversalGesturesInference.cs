@@ -1,4 +1,5 @@
 using System;
+using SD = System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -7,12 +8,19 @@ using Newtonsoft.Json.Linq; // idk if its good to have this installed
 using Unity.Barracuda;
 using TMPro;
 
+// UniversalGesturesInference.cs
+// This script is used to load a trained neural network model and run inference on hand data.
+
+
+
 public class UniversalGesturesInference : MonoBehaviour
 {
     public NNModel modelAsset;
     private Model m_RuntimeModel;
     public GameObject handObject;
-    private float inferenceTimer;
+    private float inferenceTimer = 0;
+    public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
+    public HandMode inferenceHandMode = HandMode.TwoHands; // whether to run inference using data from one hand or two hands
     private IWorker worker;
     public string modelName;
     private Dictionary<string, float[,]> weights;
@@ -24,28 +32,41 @@ public class UniversalGesturesInference : MonoBehaviour
     void Start()
     {
         // see docs for more information on this script: https://docs.unity3d.com/Packages/com.unity.barracuda%401.0/manual/GettingStarted.html
-        Debug.Log("Testing Inference");
-        inferenceTimer = 0;
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
-        inputTensor = new Tensor(1, 0, 0, 17);
-
-
-
-        // LoadWeights("../JsonData/modelWeights.json");
+        int modelInputSize;
+        if (inferenceHandMode == HandMode.OneHand)
+        {
+            modelInputSize = TestingSkeleton.ONE_HAND_NUM_FEATURES;
+        }
+        else
+        {
+            modelInputSize = TestingSkeletonTwoHands.TWO_HAND_NUM_FEATURES;
+        }
+        inputTensor = new Tensor(1, 0, 0, modelInputSize);
     }
 
     void Update()
     {
-        // run inference every second
         inferenceTimer += Time.deltaTime;
-        if (inferenceTimer >= 1)
+        // only run inference every inferenceInterval seconds
+        if (inferenceTimer >= inferenceInterval)
         {
             inferenceTimer = 0;
-            // update input tensor with new hand data
-            for (int i = 0; i < TestingSkeleton.handData.Length; i++)
+            // select hand data based on inferenceHandMode
+            float[] handData;
+            if (inferenceHandMode == HandMode.OneHand)
             {
-                inputTensor[i] = TestingSkeleton.handData[i];
+                handData = TestingSkeleton.handData;
+            }
+            else
+            {
+                handData = TestingSkeletonTwoHands.handData;
+            }
+            // update input tensor with new hand data
+            for (int i = 0; i < handData.Length; i++)
+            {
+                inputTensor[i] = handData[i];
             }
             worker.Execute(inputTensor);
             outputTensor = worker.PeekOutput();
@@ -53,11 +74,6 @@ public class UniversalGesturesInference : MonoBehaviour
             Debug.Log("Inference Output: " + inferenceOutput);
             //inferenceText.text = "Inference Output: " + inferenceOutput; //moved to AnalyticsDisplay
         }
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     float inference = GetInference();
-        //     Debug.Log("Inference: " + inference);
-        // }
     }
 
     void OnDestroy()
@@ -67,7 +83,13 @@ public class UniversalGesturesInference : MonoBehaviour
         worker.Dispose();
     }
 
+
+
+
+
+    // ============================================================
     // Below are deprecated methods for manual inference
+    // ============================================================
     void LoadWeights(string filePath)
     {
         try

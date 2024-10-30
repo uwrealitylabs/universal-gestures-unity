@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 
+// Duplicate: seems like this overlaps with JsonWriter.HandMode. We should merge them at some point.
 enum NumHands
 {
     OneHanded,
