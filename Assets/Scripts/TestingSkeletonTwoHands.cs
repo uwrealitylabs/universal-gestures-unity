@@ -36,60 +36,67 @@ public class TestingSkeletonTwoHands : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        // Function used to normalize bounded data
+        float Normalize(float value, float min, float max)
+        {
+            return (value - min) / (max - min);
+        }
+
         // ========================================
         // LEFT HAND FEATURES
         // ========================================
-        float leftIndexFingerCurl = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
-        float leftIndexFingerAbduction = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f;
-        float leftIndexFingerFlexion = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
-        float leftIndexFingerOpposition = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f;
+        float leftIndexFingerCurl = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float leftIndexFingerAbduction = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float leftIndexFingerFlexion = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float leftIndexFingerOpposition = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float leftThumbFingerCurl = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
-        float leftThumbFingerAbduction = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
+        float leftThumbFingerCurl = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float leftThumbFingerAbduction = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f, 0, 360);
         // Flexion, Opposition not available on thumb
 
-        float leftMiddleFingerCurl = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
-        float leftMiddleFingerAbduction = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
-        float leftMiddleFingerFlexion = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
-        float leftMiddleFingerOpposition = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f;
+        float leftMiddleFingerCurl = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float leftMiddleFingerAbduction = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float leftMiddleFingerFlexion = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float leftMiddleFingerOpposition = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float leftRingFingerCurl = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
-        float leftRingFingerAbduction = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f;
-        float leftRingFingerFlexion = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
-        float leftRingFingerOpposition = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f;
+        float leftRingFingerCurl = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float leftRingFingerAbduction = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float leftRingFingerFlexion = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float leftRingFingerOpposition = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float leftPinkyFingerCurl = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
+        float leftPinkyFingerCurl = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f, 0, 360);
         // Pinky does not support abduction
-        float leftPinkyFingerFlexion = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
-        float leftPinkyFingerOpposition = leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
+        float leftPinkyFingerFlexion = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float leftPinkyFingerOpposition = Normalize(leftFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
 
         // ========================================
         // RIGHT HAND FEATURES
         // ========================================
-        float rightIndexFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
-        float rightIndexFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f;
-        float rightIndexFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
-        float rightIndexFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f;
+        float rightIndexFingerCurl = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float rightIndexFingerAbduction = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float rightIndexFingerFlexion = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float rightIndexFingerOpposition = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float rightThumbFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
-        float rightThumbFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
+        float rightThumbFingerCurl = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float rightThumbFingerAbduction = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f, 0, 360);
         // Flexion, Opposition not available on thumb
 
-        float rightMiddleFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
-        float rightMiddleFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
-        float rightMiddleFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
-        float rightMiddleFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f;
+        float rightMiddleFingerCurl = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float rightMiddleFingerAbduction = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float rightMiddleFingerFlexion = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float rightMiddleFingerOpposition = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float rightRingFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
-        float rightRingFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f;
-        float rightRingFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
-        float rightRingFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f;
+        float rightRingFingerCurl = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f, 0, 360);
+        float rightRingFingerAbduction = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f, 0, 360);
+        float rightRingFingerFlexion = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float rightRingFingerOpposition = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
-        float rightPinkyFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
+        float rightPinkyFingerCurl = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f, 0, 360);
         // Pinky does not support abduction
-        float rightPinkyFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
-        float rightPinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
+        float rightPinkyFingerFlexion = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f, 0, 360);
+        float rightPinkyFingerOpposition = Normalize(rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f, 0, 1);
 
 
         // ========================================
@@ -115,12 +122,12 @@ public class TestingSkeletonTwoHands : MonoBehaviour
         float rotationXDiff = rightRotationX - leftRotationX;
         float rotationYDiff = rightRotationY - leftRotationY;
         float rotationZDiff = rightRotationZ - leftRotationZ;
-        float rotationXSin = Mathf.Sin(rotationXDiff);
-        float rotationXCos = Mathf.Cos(rotationXDiff);
-        float rotationYSin = Mathf.Sin(rotationYDiff);
-        float rotationYCos = Mathf.Cos(rotationYDiff);
-        float rotationZSin = Mathf.Sin(rotationZDiff);
-        float rotationZCos = Mathf.Cos(rotationZDiff);
+        float rotationXSin = Normalize(Mathf.Sin(rotationXDiff), -1, 1);
+        float rotationXCos = Normalize(Mathf.Cos(rotationXDiff), -1, 1);
+        float rotationYSin = Normalize(Mathf.Sin(rotationYDiff), -1, 1);
+        float rotationYCos = Normalize(Mathf.Cos(rotationYDiff), -1, 1);
+        float rotationZSin = Normalize(Mathf.Sin(rotationZDiff), -1, 1);
+        float rotationZCos = Normalize(Mathf.Cos(rotationZDiff), -1, 1);
         Debug.Log("Rotation X Diff: " + rotationXDiff + ", Rotation Y Diff: " + rotationYDiff + ", Rotation Z Diff: " + rotationZDiff);
 
         // Debug.Log("Index finger values: " + rightIndexFingerCurl + ", " + rightIndexFingerAbduction + ", " + rightIndexFingerFlexion + ", " + rightIndexFingerOpposition);
