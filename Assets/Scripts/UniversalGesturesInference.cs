@@ -19,7 +19,7 @@ public class UniversalGesturesInference : MonoBehaviour
     private Tensor inputTensor;
     private Tensor outputTensor;
     public float inferenceOutput { get; private set; }
-    [SerializeField] private TextMeshProUGUI inferenceText;
+    //  [SerializeField] private TextMeshProUGUI inferenceText; //moved to AnalyticsDisplay
 
     void Start()
     {
@@ -51,7 +51,7 @@ public class UniversalGesturesInference : MonoBehaviour
             outputTensor = worker.PeekOutput();
             inferenceOutput = outputTensor[0];
             Debug.Log("Inference Output: " + inferenceOutput);
-            inferenceText.text = "Inference Output: " + inferenceOutput;
+            //inferenceText.text = "Inference Output: " + inferenceOutput; //moved to AnalyticsDisplay
         }
         // if (Input.GetKeyDown(KeyCode.Space))
         // {
