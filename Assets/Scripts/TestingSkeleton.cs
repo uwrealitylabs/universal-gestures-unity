@@ -14,7 +14,7 @@ public class TestingSkeleton : MonoBehaviour
     private TransformConfig handTransformConfig;
     public Transform wristTransform;
     public TransformRecognizerActiveState transformRecognizerActiveState;
-    public const int NUM_FEATURES = 17;
+    public const int NUM_FEATURES = 21;
     public static float[] handData;
 
     // Start is called before the first frame update
@@ -58,26 +58,16 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
         float wristUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristUp) ?? 0.0f;
-        float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
-        float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
+        // float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
         float palmUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmUp) ?? 0.0f;
+        // float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
         float palmTowardsFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
-        float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
+        // float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
         float fingersUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersUp) ?? 0.0f;
-        float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
-        float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
+        // float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
+        // float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
 
-        Debug.Log("Wrist Up: " + wristUp + ", Wrist Down: " + wristDown + ", Palm Down: " + palmDown + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Palm Away From Face: " + palmAwayFromFace + ", Fingers Up: " + fingersUp + ", Fingers Down: " + fingersDown + ", Pinch Clear: " + pinchClear);
-
-        // Quaternion wristRotation = wristTransform.localRotation;
-        // Vector3 wristEulerAngles = wristRotation.eulerAngles;
-        // float wristUp = 5.0f;
-        // float wristFlexion = wristEulerAngles.x;
-        // float wristDeviation = wristEulerAngles.y;
-        // float wristTwist = wristEulerAngles.z;
-        // Debug.Log($"Wrist Flexion: {wristFlexion}, Deviation: {wristDeviation}, Twist: {wristTwist}");
-
-        // Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
+        // Debug.Log("Wrist Up: " + wristUp + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Fingers Up: " + fingersUp + ", Pinch Clear: " + pinchClear);
 
         // Add values to JsonWriter.GestureData.handData
         handData = new[] {
@@ -99,14 +89,9 @@ public class TestingSkeleton : MonoBehaviour
             pinkyFingerFlexion,
             pinkyFingerOpposition,
             wristUp,
-            wristDown,
-            palmDown,
             palmUp,
             palmTowardsFace,
-            palmAwayFromFace,
             fingersUp,
-            fingersDown,
-            pinchClear
         };
     }
 }
