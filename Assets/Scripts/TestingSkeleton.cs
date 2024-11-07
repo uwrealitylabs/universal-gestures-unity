@@ -10,7 +10,11 @@ public class TestingSkeleton : MonoBehaviour
     public GameObject rightHand;
     public GameObject rightHandFeature;
     private FingerFeatureStateProvider rightFingersFeatureProvider;
-    public const int ONE_HAND_NUM_FEATURES = 17;
+    private TransformFeatureStateProvider handTransformFeatureProvider;
+    private TransformConfig handTransformConfig;
+    public Transform wristTransform;
+    public TransformRecognizerActiveState transformRecognizerActiveState;
+    public const int ONE_HAND_NUM_FEATURES = 21;
     public static float[] handData;
 
     // Start is called before the first frame update
@@ -20,6 +24,9 @@ public class TestingSkeleton : MonoBehaviour
         // int currentBones = skeleton.GetCurrentNumBones();
         // Debug.Log("Current number of bones: " + currentBones);
 
+        handTransformConfig = new();
+
+        handTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
         rightFingersFeatureProvider = rightHandFeature.GetComponent<FingerFeatureStateProvider>();
     }
 
@@ -34,7 +41,7 @@ public class TestingSkeleton : MonoBehaviour
         float thumbFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
         float thumbFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
         // Flexion, Opposition not available on thumb
-        
+
         float middleFingerCurl = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
         float middleFingerAbduction = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
         float middleFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
@@ -50,9 +57,41 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerFlexion = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
-        // Debug.Log("Index finger values: " + indexFingerCurl + ", " + indexFingerAbduction + ", " + indexFingerFlexion + ", " + indexFingerOpposition);
+        float wristUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristUp) ?? 0.0f;
+        // float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
+        float palmUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmUp) ?? 0.0f;
+        // float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
+        float palmTowardsFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
+        // float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
+        float fingersUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersUp) ?? 0.0f;
+        // float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
+        // float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
+
+        // Debug.Log("Wrist Up: " + wristUp + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Fingers Up: " + fingersUp + ", Pinch Clear: " + pinchClear);
 
         // Add values to JsonWriter.GestureData.handData
-        handData = new [] {thumbFingerCurl, thumbFingerAbduction, indexFingerCurl, indexFingerAbduction, indexFingerFlexion, indexFingerOpposition, middleFingerCurl, middleFingerAbduction, middleFingerFlexion, middleFingerOpposition, ringFingerCurl, ringFingerAbduction, ringFingerFlexion, ringFingerOpposition, pinkyFingerCurl, pinkyFingerFlexion, pinkyFingerOpposition};
-    }   
+        handData = new[] {
+            thumbFingerCurl,
+            thumbFingerAbduction,
+            indexFingerCurl,
+            indexFingerAbduction,
+            indexFingerFlexion,
+            indexFingerOpposition,
+            middleFingerCurl,
+            middleFingerAbduction,
+            middleFingerFlexion,
+            middleFingerOpposition,
+            ringFingerCurl,
+            ringFingerAbduction,
+            ringFingerFlexion,
+            ringFingerOpposition,
+            pinkyFingerCurl,
+            pinkyFingerFlexion,
+            pinkyFingerOpposition,
+            wristUp,
+            palmUp,
+            palmTowardsFace,
+            fingersUp,
+        };
+    }
 }
