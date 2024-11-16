@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using System.Collections.Generic;
 using TMPro;
 
 
@@ -38,12 +39,15 @@ public class JsonWriter : MonoBehaviour
     private RecordingStatus desiredRecordingStatus; // Recording status to start recording
     private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
-    private string recordingFileName; // Name of file to save data to
+    public string recordingFileName; // Name of file to save data to
+    //public   recordedFiles;
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
     public HandMode recordingHandMode = HandMode.TwoHands;
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
+    public string writePath;
+    public List<string> writePaths = new();
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
@@ -69,9 +73,13 @@ public class JsonWriter : MonoBehaviour
         }
         // record file name includes timestamp
         string path = jsonDir + recordingFileName;
+        writePath = path;
+
         if (!File.Exists(path))
         {
-            File.Create(path);
+            FileStream s = File.Create(path);
+            s.Close();
+            writePaths.Add(path);
         }
         FileStream stream = new FileStream(path, FileMode.Open);
         if (stream.Length == 0)
