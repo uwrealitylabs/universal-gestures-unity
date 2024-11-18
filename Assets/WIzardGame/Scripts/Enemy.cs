@@ -7,6 +7,8 @@ public class Enemy : MonoBehaviour
     private WizardGameManager _gameManager;
     private Transform _targetTransform;
     [SerializeField] private float _speed;
+    [SerializeField] private float _bobSpeed;
+    [SerializeField] private float _bobDistance;
 
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private List<GameObject> spellPrefabs;
@@ -33,6 +35,7 @@ public class Enemy : MonoBehaviour
         // update enemy position and rotation
         transform.LookAt(_targetTransform);
         transform.Translate(Vector3.forward * Time.deltaTime * _speed);
+        transform.Translate(Vector3.up * Mathf.Sin(Time.time * _bobSpeed) * _bobDistance, Space.World);
     }
 
     void OnTriggerEnter(Collider other)
