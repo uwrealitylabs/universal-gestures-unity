@@ -8,10 +8,10 @@ public class Enemy : MonoBehaviour
     private Transform _targetTransform;
     [SerializeField] private float _speed;
 
-    [SerializeField] public List<Spell> spells;
+    [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private List<GameObject> spellPrefabs;
-    [SerializeField] private List<GameObject> spellIcons;
-
+    public List<Spell> spells;
+    private List<GameObject> spellIcons = new List<GameObject>();
 
     public void Setup(WizardGameManager gameManager, Transform target)
     {
@@ -46,6 +46,14 @@ public class Enemy : MonoBehaviour
         {
             spells.RemoveAt(0);
             regenerateSpellIcons();
+        }
+
+        // death
+        if (spells.Count == 0)
+        {
+            Instantiate(deathEffectPrefab, this.transform.position, Quaternion.identity, this.transform);
+            this.transform.localScale = Vector3.zero;
+            Destroy(this.gameObject, 2);
         }
     }
 
