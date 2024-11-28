@@ -40,7 +40,7 @@ public class JsonWriter : MonoBehaviour
     private float startRecordingTime; // Time when data recording started
     private string recordingFileName; // Name of file to save data to
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
-    public HandMode recordingHandMode = HandMode.TwoHands;
+    private HandMode recordingHandMode = HandMode.TwoHands;
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
@@ -96,7 +96,7 @@ public class JsonWriter : MonoBehaviour
         }
 
         // Record data if recordingStatus is not NotRecording
-        if (recordingStatusUI.recordingStatus != RecordingStatus.NotRecording)
+        if (recordingStatusUI.GetRecordingStatus() != RecordingStatus.NotRecording)
         {
             GestureData gestureData = new GestureData();
 
@@ -111,53 +111,63 @@ public class JsonWriter : MonoBehaviour
             }
 
             // Set confidence based on recordingStatus (positive or negative data)
-            if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingPositive)
+            if (recordingStatusUI.GetRecordingStatus() == RecordingStatus.RecordingPositive)
             {
                 gestureData.confidence = 1;
             }
-            else if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingNegative)
+            else if (recordingStatusUI.GetRecordingStatus() == RecordingStatus.RecordingNegative)
             {
                 gestureData.confidence = 0;
             }
 
-            JsonWrite(gestureData);
-
             // If time since recording started is greater than duration, stop recording
             if (Time.time - startRecordingTime >= recordingDuration)
             {
+                Debug.Log("Stopped Recording");
                 StopRecording();
             }
+            // I moved this so that the json writing doesn't slow down the recording timer. Is this allowed?
+            JsonWrite(gestureData);
         }
     }
 
 
-    // Begins delay before positive data recording starts
-    public void StartRecordingPositiveIntent()
+    // Sets positive/negative recording intent
+    public void SetIntent(Intent intent)
     {
-        desiredRecordingStatus = RecordingStatus.RecordingPositive;
-        timeToStartRecording = Time.time + recordingStartDelay;
+        if(intent == Intent.Positive)
+        {
+            desiredRecordingStatus = RecordingStatus.RecordingPositive;
+        }else if(intent == Intent.Negative)
+        {
+            desiredRecordingStatus = RecordingStatus.RecordingNegative;
+        }
     }
 
-    // Begins delay before negative data recording starts
-    public void StartRecordingNegativeIntent()
+    // Begins delay before data recording starts
+    public void StartRecordDelay()
     {
-        desiredRecordingStatus = RecordingStatus.RecordingNegative;
+        SetIntent(recordingStatusUI.GetIntent());
         timeToStartRecording = Time.time + recordingStartDelay;
+        Debug.Log("Start Delay");
     }
 
     // Begins recording data
     public void StartRecording()
     {
-        recordingStatusUI.recordingStatus = desiredRecordingStatus;
+        Debug.Log(recordingHandMode.ToString());
+        recordingStatusUI.SetRecordingStatus(desiredRecordingStatus);
         recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
-        recordingStatusUI.targetFile = recordingFileName;
+        recordingStatusUI.SetTargetFile(recordingFileName);
         startRecordingTime = Time.time;
+        StartCoroutine(recordingStatusUI.StartRecordingCountdown(recordingDuration));
     }
 
     // Stops recording data
     public void StopRecording()
     {
-        recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
+        recordingStatusUI.SetRecordingStatus(RecordingStatus.NotRecording);
+
     }
 
     // Sets recording hand mode to one hand
@@ -170,5 +180,11 @@ public class JsonWriter : MonoBehaviour
     public void SetRecordingHandModeTwoHands()
     {
         recordingHandMode = HandMode.TwoHands;
+    }
+
+    public void SetGestureName(string name)
+    {
+        gestureName = name;
+        recordingStatusUI.SetGestureName(gestureName);
     }
 }
