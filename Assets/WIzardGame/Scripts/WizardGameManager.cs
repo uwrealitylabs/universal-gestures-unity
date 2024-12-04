@@ -5,9 +5,8 @@ using TMPro;
 
 public enum Spell
 {
-    Victory,
-    Palm,
-    Call
+    Heart,
+    Victory
 }
 
 public class WizardGameManager : MonoBehaviour
@@ -23,6 +22,11 @@ public class WizardGameManager : MonoBehaviour
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private float enemySpawnTime = 5f;
     private float enemySpawnCounter;
+
+    [SerializeField] private Material offMaterial;
+    [SerializeField] private Material onMaterial;
+    [SerializeField] private GameObject heartBox;
+    [SerializeField] private GameObject victoryBox;
 
     private void Start()
     {
@@ -46,6 +50,18 @@ public class WizardGameManager : MonoBehaviour
         } 
     }
 
+    public void CastHeartSpell()
+    {
+        CastSpell(Spell.Heart);
+        heartBox.transform.Rotate(new Vector3(20, 0, 0));
+    }
+
+    public void CastVictorySpell()
+    {
+        CastSpell(Spell.Victory);
+        victoryBox.transform.Rotate(new Vector3(20, 0, 0));
+    }
+
     public void CastSpell(Spell spell)
     {
         foreach (Enemy enemy in _enemies) enemy.ReceiveSpell(spell);
@@ -63,6 +79,8 @@ public class WizardGameManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (_inGame) return;
+
         Debug.Log("Game Started!");
         _score = 0;
         gameText.text = "Game Started";

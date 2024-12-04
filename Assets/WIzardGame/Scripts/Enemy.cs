@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Enemy : MonoBehaviour
 {
     private WizardGameManager _gameManager;
     private Transform _targetTransform;
+    private bool _isDead = false;
     [SerializeField] private float _speed;
     [SerializeField] private float _bobSpeed;
     [SerializeField] private float _bobDistance;
@@ -21,12 +23,13 @@ public class Enemy : MonoBehaviour
         _targetTransform = target;
 
         // spawn position
-        transform.position = Random.insideUnitSphere * 3;
-        transform.position = new Vector3(transform.position.x, Mathf.Abs(transform.position.y)+1, -Mathf.Abs(transform.position.z));
+        transform.localPosition = UnityEngine.Random.insideUnitSphere * 3;
+        transform.localPosition = new Vector3(transform.localPosition.x, Mathf.Abs(transform.localPosition.y)+1, -Mathf.Abs(transform.localPosition.z));
 
         // generate spell
-        int numSpells = Random.Range(1, 4);
-        for (int i = 0; i < numSpells; i++) spells.Add((Spell)Random.Range(0, 3));
+        int numSpellTypes = Enum.GetNames(typeof(Spell)).Length;
+        int numSpells = UnityEngine.Random.Range(1, 4);
+        for (int i = 0; i < numSpells; i++) spells.Add((Spell)UnityEngine.Random.Range(0, numSpellTypes));
         regenerateSpellIcons();
     }
 
@@ -40,7 +43,7 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player") _gameManager.EndGame();
+        if (!_isDead && other.gameObject.tag == "Player") _gameManager.EndGame();
     }
 
     public void ReceiveSpell(Spell spell)
@@ -54,6 +57,7 @@ public class Enemy : MonoBehaviour
         // death
         if (spells.Count == 0)
         {
+            _isDead = true;
             Instantiate(deathEffectPrefab, this.transform.position, Quaternion.identity, this.transform);
             this.transform.localScale = Vector3.zero;
             Destroy(this.gameObject, 2);

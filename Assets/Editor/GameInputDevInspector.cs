@@ -15,20 +15,15 @@ public class GameInputDevInspector : Editor
             gameInput.StartGame();
         }
 
+        if (GUILayout.Button("Cast Heart Spell"))
+        {
+            gameInput.CastSpell(Spell.Heart);
+            gameInput.StartGame();
+        }
+
         if (GUILayout.Button("Cast Victory Spell"))
         {
             gameInput.CastSpell(Spell.Victory);
         }
-        
-        if (GUILayout.Button("Cast Palm Spell"))
-        {
-            gameInput.CastSpell(Spell.Palm);
-        }
-
-        if (GUILayout.Button("Cast Call Spell"))
-        {
-            gameInput.CastSpell(Spell.Call);
-        }
-
     }
 }

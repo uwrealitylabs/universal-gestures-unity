@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3895384281353269000}
   - component: {fileID: 4854201650472916145}
   m_Layer: 0
-  m_Name: PalmSpell
+  m_Name: OtherSpell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
