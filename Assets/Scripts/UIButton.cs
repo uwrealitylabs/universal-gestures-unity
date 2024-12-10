@@ -11,8 +11,15 @@ enum ButtonType
 {
     ControlPanel,
     OpenLink,
-    PerformFunction
+    PerformFunction,
+    None
 };
+
+enum State
+{
+    Active,
+    Inactive
+}
 
 [CustomEditor(typeof(UIButton))]
 public class UIButtonEditor : Editor
@@ -108,12 +115,15 @@ public class UIButton : MonoBehaviour
     [SerializeField]
     private Sprite inactiveSprite;
 
+    private State state;
+
     public void Start()
     {
         if (hasStateSprites)
         {
             myImage.sprite = inactiveSprite;
         }
+        state = State.Inactive;
     }
     public void ClosePanel()
     {
@@ -130,6 +140,7 @@ public class UIButton : MonoBehaviour
 
     public void Deactivate()
     {
+        state = State.Inactive;
         if (hasStateSprites)
         {
             myImage.sprite = inactiveSprite;
@@ -138,6 +149,7 @@ public class UIButton : MonoBehaviour
 
     public void Activate()
     {
+        state = State.Active;
         if (hasStateSprites)
         {
             myImage.sprite = activeSprite;
@@ -157,7 +169,13 @@ public class UIButton : MonoBehaviour
     public void PerformFunction()
     {
         function.Invoke();
-        Activate();
+        if(state == State.Inactive)
+        {
+            Activate();
+        }else if(state == State.Active)
+        {
+            Deactivate();
+        }
     }
 
     public Boolean HasStateSprites()

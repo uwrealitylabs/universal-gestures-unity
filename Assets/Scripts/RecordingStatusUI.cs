@@ -20,55 +20,43 @@ public enum Intent
 
 public class RecordingStatusUI : MonoBehaviour
 {
-    [Header ("Left UI")]
-    [SerializeField] private TextMeshProUGUI labelText;
     [SerializeField] private TextMeshProUGUI targetFileText;
     [SerializeField] private TextMeshProUGUI gestureNameText;
     [SerializeField] private TextMeshProUGUI handednessText;
-    [SerializeField] private TextMeshProUGUI intentText;
+    [SerializeField] private UIButton positive;
+    [SerializeField] private UIButton negative;
 
-    private string gestureName;
-    private string targetFile;
     private HandMode handedness;
 
-    [Header("Right UI")]
-    [SerializeField] private GameObject startRecordingBtn;
     [SerializeField] private GameObject recordingPreview;
+    [SerializeField] private UIButton recordingIcon;
     [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private TextMeshProUGUI countdownRecordStatusText;
     private RecordingStatus recordingStatus;
 
-    [SerializeField] private UnityEvent setHandModeOneHand;
-    [SerializeField] private UnityEvent setHandModeTwoHands;
-    [SerializeField] private UnityEvent startRecordingDelay;
+
+    [SerializeField] private JsonWriter jsonWriter;
+    [SerializeField] Transform recordingsDestination;
+    [SerializeField] GameObject recordingItemPrefab;
+
     private Intent intent;
 
-    private void Start()
-    {
+    public void Start()
+    {   
         intent = Intent.Positive;
-        intentText.text = "Positive";
-        recordingPreview.SetActive(false);
         countdownText.text = "";
-        startRecordingBtn.SetActive(true);
         countdownRecordStatusText.text = "";
+        gestureNameText.text = jsonWriter.GetGestureName();
     }
 
-    void Update()
-    {
-        labelText.text = recordingStatus.ToString();
-        targetFileText.text = targetFile;
-        gestureNameText.text = gestureName;
-    }
     public void StartRecording()
     {
-        startRecordingDelay.Invoke();
+        jsonWriter.StartRecordDelay();
         StartCoroutine(StartThreeTwoOneCountdown());
     }
 
     public IEnumerator StartThreeTwoOneCountdown(float countdownValue = 3f)
     {
-        startRecordingBtn.SetActive(false);
-
         float timeLeft = countdownValue;
         while (timeLeft > 0)
         {
@@ -79,6 +67,7 @@ public class RecordingStatusUI : MonoBehaviour
 
         countdownText.text = "";
         recordingPreview.SetActive(true);
+        recordingIcon.Activate();
     }
 
     public IEnumerator StartRecordingCountdown(float countdownValue)
@@ -86,40 +75,49 @@ public class RecordingStatusUI : MonoBehaviour
         float timeLeft = countdownValue;
         while (timeLeft > 0)
         {
-            countdownRecordStatusText.text = ((int)timeLeft).ToString();
+            countdownRecordStatusText.text = string.Format("{00}",  ((int)timeLeft).ToString());
             yield return new WaitForSeconds(1f);
             timeLeft--;
         }
         countdownRecordStatusText.text = "";
+        recordingIcon.Deactivate();
     }
 
     public void SetHandedness(HandMode handedness)
     {
         this.handedness = handedness;
-        handednessText.text = handedness.ToString();
+        if (handedness == HandMode.OneHand)
+        {
+            handednessText.text = "One-handed*";
+        }
+        else if (handedness == HandMode.TwoHands)
+        {
+            handednessText.text = "Two-handed*";
+        }
     }
 
     public void SwapHandedness()
     {
-        Debug.Log("Swapping handedness...");
-        if(this.handedness == HandMode.OneHand)
+        if (this.handedness == HandMode.OneHand)
         {
             SetHandedness(HandMode.TwoHands);
-            setHandModeTwoHands.Invoke();
+            jsonWriter.SetRecordingHandModeTwoHands();
         }
         else
         {
             SetHandedness(HandMode.OneHand);
-            setHandModeOneHand.Invoke();
+            jsonWriter.SetRecordingHandModeOneHand();
         }
     }
+
     public void SetRecordingStatus(RecordingStatus recordingStatus)
     {
         this.recordingStatus = recordingStatus;
-        if(recordingStatus == RecordingStatus.NotRecording)
+        if (recordingStatus == RecordingStatus.NotRecording)
         {
-            startRecordingBtn.SetActive(true);
             recordingPreview.SetActive(false);
+            positive.Deactivate();
+            negative.Deactivate();
         }
     }
 
@@ -128,33 +126,32 @@ public class RecordingStatusUI : MonoBehaviour
         return recordingStatus;
     }
 
-    public void SetGestureName(string name)
-    {
-        this.gestureName = name;
-    }
-
     public void SetTargetFile(string targetFile)
     {
-        this.targetFile = targetFile;
+        targetFileText.text = targetFile;
     }
 
-    public void ChangeIntent()
+    public void StartRecordingPositive()
     {
-        Debug.Log("Changing intent...");
-        if (intent == Intent.Positive)
-        {
-            intent = Intent.Negative;
-            intentText.text = "Negative";
-        }
-        else if(intent == Intent.Negative)
-        {
-            intent = Intent.Positive;
-            intentText.text = "Positive";
-        }
+        intent = Intent.Positive;
+        StartRecording();
+    }
+
+    public void StartRecordingNegative()
+    {
+        intent = Intent.Negative;
+        StartRecording();
     }
 
     public Intent GetIntent()
     {
         return intent;
+    }
+
+    public void AddRecording(string name)
+    {
+        GameObject item = Instantiate(recordingItemPrefab, recordingsDestination);
+        RecordingItem recordingItem = item.GetComponent<RecordingItem>();
+        recordingItem.Initialize(name, intent);
     }
 }

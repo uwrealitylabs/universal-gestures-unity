@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using TMPro;
+using Oculus.Interaction.Input;
 
 
 // -- JSON File Writer --
@@ -41,13 +42,21 @@ public class JsonWriter : MonoBehaviour
     private string recordingFileName; // Name of file to save data to
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
     private HandMode recordingHandMode = HandMode.TwoHands;
-    public float recordingDuration = 10.0f; // Duration of recording in seconds
+    public float recordingDuration; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
-    public string gestureName;
+    private string gestureName;
+    private string filePath;
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
         public float[] handData; // float array of hand position data (features)
+    }
+
+    private void Start()
+    {
+        gestureName = ControlInEditor.GetGestureName();
+        filePath = ControlInEditor.GetFilePath();
+        recordingDuration = ControlInEditor.GetRecordingDuration();
     }
 
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
@@ -167,7 +176,7 @@ public class JsonWriter : MonoBehaviour
     public void StopRecording()
     {
         recordingStatusUI.SetRecordingStatus(RecordingStatus.NotRecording);
-
+        recordingStatusUI.AddRecording(recordingFileName);
     }
 
     // Sets recording hand mode to one hand
@@ -182,9 +191,18 @@ public class JsonWriter : MonoBehaviour
         recordingHandMode = HandMode.TwoHands;
     }
 
-    public void SetGestureName(string name)
+    public string GetGestureName()
     {
-        gestureName = name;
-        recordingStatusUI.SetGestureName(gestureName);
+        return gestureName;
+    }
+
+    public string GetFilePath()
+    {
+        return filePath;
+    }
+
+    public string GetRecordingFileName()
+    {
+        return recordingFileName;
     }
 }
