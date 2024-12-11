@@ -21,9 +21,9 @@ public class GameInputDevInspector : Editor
             gameInput.StartGame();
         }
 
-        if (GUILayout.Button("Cast Victory Spell"))
+        if (GUILayout.Button("Cast Diamond Spell"))
         {
-            gameInput.CastSpell(Spell.Victory);
+            gameInput.CastSpell(Spell.Diamond);
         }
     }
 }

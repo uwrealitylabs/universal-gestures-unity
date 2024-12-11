@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec66718d008fbd4d88859a4f4272773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 0.2
+  _speed: 1
   _bobSpeed: 10
   _bobDistance: 0.01
   deathEffectPrefab: {fileID: 6427103774502846225, guid: 9f1d2fc7daed6a44bbc6066cc8a4ea78,

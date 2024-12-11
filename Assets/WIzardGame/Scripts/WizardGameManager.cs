@@ -6,15 +6,16 @@ using TMPro;
 public enum Spell
 {
     Heart,
-    Victory
+    Diamond
 }
 
 public class WizardGameManager : MonoBehaviour
 {
     private bool _inGame = false;
     private int _score;
+    private Transform player;
     [SerializeField] private TextMeshPro gameText;
-    [SerializeField] private Transform player;
+    [SerializeField] private GameObject startGameButton;
 
     // ENEMY MANAGEMENT
     List<Enemy> _enemies = new List<Enemy>();
@@ -26,11 +27,12 @@ public class WizardGameManager : MonoBehaviour
     [SerializeField] private Material offMaterial;
     [SerializeField] private Material onMaterial;
     [SerializeField] private GameObject heartBox;
-    [SerializeField] private GameObject victoryBox;
+    [SerializeField] private GameObject diamondBox;
 
     private void Start()
     {
-        if (player.tag != "Player") Debug.LogError("Player object needs to have 'Player' tag");
+        player = GameObject.FindWithTag("Player").transform;
+        //if (_player.tag != "Player") Debug.LogError("Player object needs to have 'Player' tag");
     }
 
     void Update()
@@ -56,10 +58,10 @@ public class WizardGameManager : MonoBehaviour
         heartBox.transform.Rotate(new Vector3(20, 0, 0));
     }
 
-    public void CastVictorySpell()
+    public void CastDiamondSpell()
     {
-        CastSpell(Spell.Victory);
-        victoryBox.transform.Rotate(new Vector3(20, 0, 0));
+        CastSpell(Spell.Diamond);
+        diamondBox.transform.Rotate(new Vector3(20, 0, 0));
     }
 
     public void CastSpell(Spell spell)
@@ -85,6 +87,11 @@ public class WizardGameManager : MonoBehaviour
         _score = 0;
         gameText.text = "Game Started";
         _inGame = true;
+        startGameButton.SetActive(false);
+
+        Debug.Log(startGameButton.active);
+        Debug.Log(startGameButton.activeInHierarchy);
+        Debug.Log(startGameButton.activeSelf);
     }
 
     public void EndGame()
@@ -97,5 +104,6 @@ public class WizardGameManager : MonoBehaviour
         _enemies.Clear();
 
         _inGame = false;
+        startGameButton.SetActive(true);
     }
 }
