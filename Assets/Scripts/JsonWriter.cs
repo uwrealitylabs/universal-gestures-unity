@@ -27,6 +27,7 @@ using TMPro;
 
 
 // Tracks whether we are writing data for one hand or two hands.
+// DEPRECATED for release, see HandModeNew in UGInferenceRunnerScript.cs
 public enum HandMode
 {
     OneHand,

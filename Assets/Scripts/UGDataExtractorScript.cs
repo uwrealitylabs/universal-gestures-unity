@@ -33,6 +33,10 @@ public class UGDataExtractorScript : MonoBehaviour
     [HideInInspector]
     public float[] twoHandsData;
 
+    // Constants
+    public const int ONE_HAND_NUM_FEATURES = 21;
+    public const int TWO_HAND_NUM_FEATURES = 44;
+
 
     void Start()
     {
