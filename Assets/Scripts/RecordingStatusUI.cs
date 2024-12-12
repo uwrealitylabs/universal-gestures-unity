@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.Events;
 using System;
+using System.IO;
 
 public enum RecordingStatus
 {
@@ -20,7 +21,7 @@ public enum Intent
 
 public class RecordingStatusUI : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI targetFileText;
+    [SerializeField] private TextMeshProUGUI targetFolderText;
     [SerializeField] private TextMeshProUGUI gestureNameText;
     [SerializeField] private TextMeshProUGUI handednessText;
     [SerializeField] private UIButton positive;
@@ -47,6 +48,8 @@ public class RecordingStatusUI : MonoBehaviour
         countdownText.text = "";
         countdownRecordStatusText.text = "";
         gestureNameText.text = jsonWriter.GetGestureName();
+        targetFolderText.text = jsonWriter.getJsonDir();
+        MakeInitialRecordingList();
     }
 
     public void StartRecording()
@@ -126,11 +129,6 @@ public class RecordingStatusUI : MonoBehaviour
         return recordingStatus;
     }
 
-    public void SetTargetFile(string targetFile)
-    {
-        targetFileText.text = targetFile;
-    }
-
     public void StartRecordingPositive()
     {
         intent = Intent.Positive;
@@ -148,10 +146,27 @@ public class RecordingStatusUI : MonoBehaviour
         return intent;
     }
 
+    public void MakeInitialRecordingList()
+    {
+        DirectoryInfo info = new DirectoryInfo(jsonWriter.getJsonDir());
+        FileInfo[] files = info.GetFiles();
+        foreach(FileInfo file in files)
+        {
+            AddRecordingFromFile(file.Name);
+        }
+    }
+
     public void AddRecording(string name)
     {
         GameObject item = Instantiate(recordingItemPrefab, recordingsDestination);
         RecordingItem recordingItem = item.GetComponent<RecordingItem>();
         recordingItem.Initialize(name, intent);
+    }
+
+    public void AddRecordingFromFile(string name)
+    {
+        GameObject item = Instantiate(recordingItemPrefab, recordingsDestination);
+        RecordingItem recordingItem = item.GetComponent<RecordingItem>();
+        recordingItem.Initialize(name, null);
     }
 }

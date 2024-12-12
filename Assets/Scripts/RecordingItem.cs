@@ -2,13 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Google.Protobuf;
 using TMPro;
 using UnityEngine;
+using System.IO;
 
 public class RecordingItem : MonoBehaviour
 {
     private int recordingNum; // not zero-indexed
     private string recordingName;
+    private string filePath;
 
     [SerializeField]
     private TextMeshProUGUI labelText; // index number + recording name
@@ -17,31 +20,55 @@ public class RecordingItem : MonoBehaviour
     private TextMeshProUGUI intentText; // "+" or "-"
 
     private static List<RecordingItem> recordings;
+    private static string folderDir;
 
     // initializes a recordingItem with appropriate name, intent
-    public void Initialize(string name, Intent intent)
+
+    public void Initialize(string name, Intent? intent)
     {
-        if(recordings == null)
+        if (recordings == null)
         {
             recordings = new List<RecordingItem>();
         }
+        recordings.Add(this);
 
         recordingName = name;
-        recordingNum = recordings.Count + 1;
+        recordingNum = recordings.Count;
+        filePath = folderDir + recordingName;
 
         Debug.Log("Initializing with " + name + " " + recordingNum);
 
         UpdateLabel();
-        
-        if(intent == Intent.Positive)
+
+        Intent? myintent = intent;
+
+        if (intent == null)
+        {
+            StreamReader reader = new StreamReader(filePath);
+            reader.ReadLine();
+            string myline = reader.ReadLine();
+            char intentIndicator = myline[18];
+            reader.Close();
+
+            Debug.Log("Intent Indicator: " + intentIndicator);
+
+            if (intentIndicator == '0')
+            {
+                myintent = Intent.Negative;
+            }
+            else if (intentIndicator == '1')
+            {
+                myintent = Intent.Positive;
+            }
+        }
+        if (myintent == Intent.Positive)
         {
             intentText.text = "+";
-        }else if (intent == Intent.Negative)
+        }
+        else if (myintent == Intent.Negative)
         {
             intentText.text = "-";
         }
-
-        recordings.Add(this);
     }
 
     // sets the recordingNum of a recording item while updating the label
@@ -64,9 +91,24 @@ public class RecordingItem : MonoBehaviour
     public void DeleteRecording()
     {
         Debug.Log("Deleting Recording");
-        recordings.Remove(this);
+
+        // remove from the list
+        recordings.RemoveAt(recordingNum - 1);
         UpdateRecordingsList(recordingNum - 1);
-        GameObject.Destroy(this);
+
+        // delete the actual file
+        if (!File.Exists(filePath))
+        {
+            Debug.Log("File does not exist (file path: " + filePath);
+        }
+        else
+        {
+            File.Delete(filePath);
+            Debug.Log("Deleting File");
+        }
+
+        // destroy the gameobject that this script is attached to (the recordingitem)
+        Destroy(gameObject);
     }
 
     // manage indices for the recordings when a recording is deleted
@@ -78,9 +120,8 @@ public class RecordingItem : MonoBehaviour
         }
     }
 
-    // must change this later using the file path
-    public void OnDestroy()
+    public static void SetFolderDir(string folder)
     {
-        // some code to delete the file
+        folderDir = folder;
     }
 }

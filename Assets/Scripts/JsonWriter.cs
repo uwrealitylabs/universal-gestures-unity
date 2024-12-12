@@ -4,6 +4,8 @@ using System.Text;
 using UnityEngine;
 using TMPro;
 using Oculus.Interaction.Input;
+using System.Collections;
+using System.Collections.Generic;
 
 
 // -- JSON File Writer --
@@ -42,10 +44,12 @@ public class JsonWriter : MonoBehaviour
     private string recordingFileName; // Name of file to save data to
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
     private HandMode recordingHandMode = HandMode.TwoHands;
-    public float recordingDuration; // Duration of recording in seconds
-    public float recordingStartDelay = 3.0f; // Delay before recording starts
+    private float recordingDuration; // Duration of recording in seconds
+    private float recordingStartDelay = 3.0f; // Delay before recording starts
     private string gestureName;
-    private string filePath;
+    private string jsonDir;
+    public string writePath;
+    public List<string> writePaths = new();
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
@@ -55,8 +59,9 @@ public class JsonWriter : MonoBehaviour
     private void Start()
     {
         gestureName = ControlInEditor.GetGestureName();
-        filePath = ControlInEditor.GetFilePath();
         recordingDuration = ControlInEditor.GetRecordingDuration();
+        jsonDir = Application.dataPath + "/../JsonData/"; // Current directory to save json files
+        RecordingItem.SetFolderDir(jsonDir);
     }
 
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
@@ -78,9 +83,13 @@ public class JsonWriter : MonoBehaviour
         }
         // record file name includes timestamp
         string path = jsonDir + recordingFileName;
+        writePath = path;
+
         if (!File.Exists(path))
         {
-            File.Create(path);
+            FileStream s = File.Create(path);
+            s.Close();
+            writePaths.Add(path);
         }
         FileStream stream = new FileStream(path, FileMode.Open);
         if (stream.Length == 0)
@@ -93,6 +102,12 @@ public class JsonWriter : MonoBehaviour
         stream.Write(insertBytes);
         Debug.Log("Writing to " + gestureName + ".json: '" + jsonString + "'");
         stream.Close();
+    }
+
+    IEnumerator WaitForJsonWriting(GestureData gestureData)
+    {
+        JsonWrite(gestureData);
+        yield return null;
     }
 
     void LateUpdate()
@@ -129,14 +144,14 @@ public class JsonWriter : MonoBehaviour
                 gestureData.confidence = 0;
             }
 
+            StartCoroutine(WaitForJsonWriting(gestureData)); // put into coroutine just in case takes a long time
+
             // If time since recording started is greater than duration, stop recording
             if (Time.time - startRecordingTime >= recordingDuration)
             {
                 Debug.Log("Stopped Recording");
                 StopRecording();
             }
-            // I moved this so that the json writing doesn't slow down the recording timer. Is this allowed?
-            JsonWrite(gestureData);
         }
     }
 
@@ -167,7 +182,7 @@ public class JsonWriter : MonoBehaviour
         Debug.Log(recordingHandMode.ToString());
         recordingStatusUI.SetRecordingStatus(desiredRecordingStatus);
         recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
-        recordingStatusUI.SetTargetFile(recordingFileName);
+        
         startRecordingTime = Time.time;
         StartCoroutine(recordingStatusUI.StartRecordingCountdown(recordingDuration));
     }
@@ -196,13 +211,13 @@ public class JsonWriter : MonoBehaviour
         return gestureName;
     }
 
-    public string GetFilePath()
-    {
-        return filePath;
-    }
-
     public string GetRecordingFileName()
     {
         return recordingFileName;
+    }
+
+    public string getJsonDir()
+    {
+        return jsonDir; 
     }
 }

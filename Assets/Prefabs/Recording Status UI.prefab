@@ -1087,7 +1087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a560e3e7adc9be74d97a3cde8420315f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetFileText: {fileID: 5353460225917820111}
+  targetFolderText: {fileID: 5353460225917820111}
   gestureNameText: {fileID: 779047410751889811}
   handednessText: {fileID: 3000072276756793385}
   positive: {fileID: 6680563712857766708}
@@ -1374,7 +1374,7 @@ GameObject:
   - component: {fileID: 2871193478041024776}
   - component: {fileID: 5353460225917820111}
   m_Layer: 5
-  m_Name: Target File
+  m_Name: Target Folder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1666,7 +1666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.604, y: -0.15}
+  m_AnchoredPosition: {x: 1.604, y: -0.155}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2193249479261507915
@@ -1733,7 +1733,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
