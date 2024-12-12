@@ -2,6 +2,7 @@
   "dependencies": {
     "com.meta.xr.sdk.all": "68.0.1",
     "com.unity.2d.sprite": "1.0.0",
+    "com.unity.addressables": "1.21.21",
     "com.unity.barracuda": "https://github.com/Unity-Technologies/barracuda-release.git",
     "com.unity.collab-proxy": "2.5.1",
     "com.unity.ide.rider": "3.0.28",
@@ -14,7 +15,6 @@
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.9.2",
     "com.unity.xr.management": "4.5.0",
-    "com.unity.xr.oculus": "4.2.0",
     "com.unity.xr.openxr": "1.11.1-exp.1",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",

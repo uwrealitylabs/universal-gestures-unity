@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using System.Collections.Generic;
 using TMPro;
 using Oculus.Interaction.Input;
 using System.Collections;
@@ -41,15 +42,15 @@ public class JsonWriter : MonoBehaviour
     private RecordingStatus desiredRecordingStatus; // Recording status to start recording
     private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
-    private string recordingFileName; // Name of file to save data to
-    // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
-    private HandMode recordingHandMode = HandMode.TwoHands;
+    public string recordingFileName; // Name of file to save data to
+    private HandMode recordingHandMode = HandMode.TwoHands; // recordingHandMode = HandMode.OneHand to record data for one hand, TwoHands to record data for two hands
     private float recordingDuration; // Duration of recording in seconds
     private float recordingStartDelay = 3.0f; // Delay before recording starts
     private string gestureName;
     private string jsonDir;
     public string writePath;
     public List<string> writePaths = new();
+
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
