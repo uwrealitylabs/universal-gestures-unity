@@ -207,6 +207,11 @@ public class JsonWriter : MonoBehaviour
         recordingHandMode = HandMode.TwoHands;
     }
 
+    public HandMode GetRecordingHandMode()
+    {
+        return recordingHandMode;
+    }
+
     public string GetGestureName()
     {
         return gestureName;
