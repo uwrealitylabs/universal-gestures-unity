@@ -1383,6 +1383,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce9491a5df028fd4ca0a5130dbaa4fec, type: 3}
+--- !u!1 &1816441470 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+    type: 3}
+  m_PrefabInstance: {fileID: 1995681669674352840}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2094317808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,10 +1484,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: rightHandFeature
+      value: 
+      objectReference: {fileID: 2140660357}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: twoHandDataEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: rightHandDataEnabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
         type: 3}
       propertyPath: m_Name
       value: UGDataExtractor
+      objectReference: {fileID: 0}
+    - target: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1546,10 +1572,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: modelAsset
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: ced2d1f0e11de496f9e42cb9de50f738,
+        type: 3}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: inferenceHandMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: dataExtractorObject
+      value: 
+      objectReference: {fileID: 1816441470}
     - target: {fileID: 8905340418011174206, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
       propertyPath: m_Name
       value: UGInferenceRunner
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905340418011174206, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1880,6 +1927,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Scripts
+      objectReference: {fileID: 0}
+    - target: {fileID: 4535130048623157703, guid: 34a976a5bd8544fcda36f14413fdde53,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5992241988381368781, guid: 34a976a5bd8544fcda36f14413fdde53,
         type: 3}

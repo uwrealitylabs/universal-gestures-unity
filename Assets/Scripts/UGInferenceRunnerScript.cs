@@ -51,9 +51,12 @@ public class UGInferenceRunnerScript : MonoBehaviour
 
     void Start()
     {
-        bool dataExtractorIsValid = ValidateDataExtractor();
-        if (!dataExtractorIsValid)
+        dataExtractor = dataExtractorObject.GetComponent<UGDataExtractorScript>();
+        bool configurationIsValid = ValidateConfiguration();
+        if (!configurationIsValid)
         {
+            Debug.LogError("UGInferenceRunnerScript: Configuration is not valid, inference will not run. See console logs for more information.");
+            gameObject.SetActive(false);
             return;
         }
 
@@ -70,6 +73,22 @@ public class UGInferenceRunnerScript : MonoBehaviour
         }
 
         RunFunctionIfPoseDetected();
+    }
+
+    bool ValidateConfiguration()
+    {
+        return ValidateModel() && ValidateDataExtractor();
+    }
+
+    bool ValidateModel()
+    {
+        // Check if model is set
+        if (modelAsset == null)
+        {
+            Debug.LogError("UGInferenceRunnerScript: modelAsset is not set.");
+            return false;
+        }
+        return true;
     }
 
     bool ValidateDataExtractor()

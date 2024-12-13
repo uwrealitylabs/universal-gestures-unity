@@ -101,7 +101,7 @@ public class UniversalGesturesInference : MonoBehaviour
 
 
             var loadedModel = ModelLoader.Load(nnModel);
-          
+
 
             // Dispose of the existing worker if necessary
             if (worker != null)
@@ -119,7 +119,7 @@ public class UniversalGesturesInference : MonoBehaviour
         {
             Debug.LogError("Model file not found at path: " + filePath);
         }
-        
+
     }
     NNModel LoadNNModel(string modelPath, string modelName)
     {

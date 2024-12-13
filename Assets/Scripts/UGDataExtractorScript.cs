@@ -34,12 +34,20 @@ public class UGDataExtractorScript : MonoBehaviour
     public float[] twoHandsData;
 
     // Constants
-    public const int ONE_HAND_NUM_FEATURES = 21;
+    public const int ONE_HAND_NUM_FEATURES = 17;
     public const int TWO_HAND_NUM_FEATURES = 44;
 
 
     void Start()
     {
+        // Validate configuration
+        bool validConfig = ValidateConfiguration();
+        if (!validConfig)
+        {
+            Debug.LogError("UGDataExtractorScript: Configuration is invalid. Deactivating.");
+            gameObject.SetActive(false);
+            return;
+        }
         // Initialize transform config
         transformConfig = new();
     }
@@ -67,6 +75,27 @@ public class UGDataExtractorScript : MonoBehaviour
             TransformFeatureStateProvider rightTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
             twoHandsData = GetTwoHandsData(leftFingersFeatureProvider, rightFingersFeatureProvider, leftHandPositionProvider, rightHandPositionProvider);
         }
+    }
+
+    bool ValidateConfiguration()
+    {
+        // Make sure the required data sources are provided
+        if (leftHandDataEnabled && leftHandFeature == null)
+        {
+            Debug.LogError("UGDataExtractorScript: Left Hand Feature is required for gathering left hand data.");
+            return false;
+        }
+        if (rightHandDataEnabled && rightHandFeature == null)
+        {
+            Debug.LogError("UGDataExtractorScript: Right Hand Feature is required for gathering right hand data.");
+            return false;
+        }
+        if (twoHandDataEnabled && (leftHandFeature == null || rightHandFeature == null || leftHandPositionProvider == null || rightHandPositionProvider == null))
+        {
+            Debug.LogError("UGDataExtractorScript: Left Hand Feature, Right Hand Feature, Left Hand Position Provider, and Right Hand Position Provider are required for gathering two hands data.");
+            return false;
+        }
+        return true;
     }
 
     private float[] GetOneHandData(FingerFeatureStateProvider fingersFeatureProvider, TransformFeatureStateProvider transformFeatureProvider)
@@ -126,10 +155,10 @@ public class UGDataExtractorScript : MonoBehaviour
             pinkyFingerCurl,
             pinkyFingerFlexion,
             pinkyFingerOpposition,
-            wristUp,
-            palmUp,
-            palmTowardsFace,
-            fingersUp,
+            // wristUp,
+            // palmUp,
+            // palmTowardsFace,
+            // fingersUp,
         };
 
         return handData;
