@@ -4,6 +4,9 @@ using System.Text;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using Oculus.Interaction.Input;
+using System.Collections;
+using System.Collections.Generic;
 
 
 // -- JSON File Writer --
@@ -40,18 +43,26 @@ public class JsonWriter : MonoBehaviour
     private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
     public string recordingFileName; // Name of file to save data to
-    //public   recordedFiles;
-    // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
-    public HandMode recordingHandMode = HandMode.TwoHands;
-    public float recordingDuration = 10.0f; // Duration of recording in seconds
-    public float recordingStartDelay = 3.0f; // Delay before recording starts
-    public string gestureName;
+    private HandMode recordingHandMode = HandMode.TwoHands; // recordingHandMode = HandMode.OneHand to record data for one hand, TwoHands to record data for two hands
+    private float recordingDuration; // Duration of recording in seconds
+    private float recordingStartDelay = 3.0f; // Delay before recording starts
+    private string gestureName;
+    private string jsonDir;
     public string writePath;
     public List<string> writePaths = new();
+
     class GestureData
     {
         public int confidence; // confidence of gesture (label)
         public float[] handData; // float array of hand position data (features)
+    }
+
+    private void Start()
+    {
+        gestureName = ControlInEditor.GetGestureName();
+        recordingDuration = ControlInEditor.GetRecordingDuration();
+        jsonDir = Application.dataPath + "/../JsonData/"; // Current directory to save json files
+        RecordingItem.SetFolderDir(jsonDir);
     }
 
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
@@ -94,6 +105,12 @@ public class JsonWriter : MonoBehaviour
         stream.Close();
     }
 
+    IEnumerator WaitForJsonWriting(GestureData gestureData)
+    {
+        JsonWrite(gestureData);
+        yield return null;
+    }
+
     void LateUpdate()
     {
         // Start recording if timeToStartRecording is set and current time is greater than timeToStartRecording
@@ -104,7 +121,7 @@ public class JsonWriter : MonoBehaviour
         }
 
         // Record data if recordingStatus is not NotRecording
-        if (recordingStatusUI.recordingStatus != RecordingStatus.NotRecording)
+        if (recordingStatusUI.GetRecordingStatus() != RecordingStatus.NotRecording)
         {
             GestureData gestureData = new GestureData();
 
@@ -119,53 +136,63 @@ public class JsonWriter : MonoBehaviour
             }
 
             // Set confidence based on recordingStatus (positive or negative data)
-            if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingPositive)
+            if (recordingStatusUI.GetRecordingStatus() == RecordingStatus.RecordingPositive)
             {
                 gestureData.confidence = 1;
             }
-            else if (recordingStatusUI.recordingStatus == RecordingStatus.RecordingNegative)
+            else if (recordingStatusUI.GetRecordingStatus() == RecordingStatus.RecordingNegative)
             {
                 gestureData.confidence = 0;
             }
 
-            JsonWrite(gestureData);
+            StartCoroutine(WaitForJsonWriting(gestureData)); // put into coroutine just in case takes a long time
 
             // If time since recording started is greater than duration, stop recording
             if (Time.time - startRecordingTime >= recordingDuration)
             {
+                Debug.Log("Stopped Recording");
                 StopRecording();
             }
         }
     }
 
 
-    // Begins delay before positive data recording starts
-    public void StartRecordingPositiveIntent()
+    // Sets positive/negative recording intent
+    public void SetIntent(Intent intent)
     {
-        desiredRecordingStatus = RecordingStatus.RecordingPositive;
-        timeToStartRecording = Time.time + recordingStartDelay;
+        if(intent == Intent.Positive)
+        {
+            desiredRecordingStatus = RecordingStatus.RecordingPositive;
+        }else if(intent == Intent.Negative)
+        {
+            desiredRecordingStatus = RecordingStatus.RecordingNegative;
+        }
     }
 
-    // Begins delay before negative data recording starts
-    public void StartRecordingNegativeIntent()
+    // Begins delay before data recording starts
+    public void StartRecordDelay()
     {
-        desiredRecordingStatus = RecordingStatus.RecordingNegative;
+        SetIntent(recordingStatusUI.GetIntent());
         timeToStartRecording = Time.time + recordingStartDelay;
+        Debug.Log("Start Delay");
     }
 
     // Begins recording data
     public void StartRecording()
     {
-        recordingStatusUI.recordingStatus = desiredRecordingStatus;
+        Debug.Log(recordingHandMode.ToString());
+        recordingStatusUI.SetRecordingStatus(desiredRecordingStatus);
         recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
-        recordingStatusUI.targetFile = recordingFileName;
+        
         startRecordingTime = Time.time;
+        StartCoroutine(recordingStatusUI.StartRecordingCountdown(recordingDuration));
     }
 
     // Stops recording data
     public void StopRecording()
     {
-        recordingStatusUI.recordingStatus = RecordingStatus.NotRecording;
+        recordingStatusUI.SetRecordingStatus(RecordingStatus.NotRecording);
+        recordingStatusUI.AddRecording(recordingFileName);
     }
 
     // Sets recording hand mode to one hand
@@ -178,5 +205,25 @@ public class JsonWriter : MonoBehaviour
     public void SetRecordingHandModeTwoHands()
     {
         recordingHandMode = HandMode.TwoHands;
+    }
+
+    public HandMode GetRecordingHandMode()
+    {
+        return recordingHandMode;
+    }
+
+    public string GetGestureName()
+    {
+        return gestureName;
+    }
+
+    public string GetRecordingFileName()
+    {
+        return recordingFileName;
+    }
+
+    public string getJsonDir()
+    {
+        return jsonDir; 
     }
 }
