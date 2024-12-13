@@ -34,7 +34,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     [Header("Run Function on Detection")]
     [SerializeField] private UnityEvent functionToRun;
     [Range(0.0f, 1.0f)]
-    [SerializeField] private float thresholdConfidenceLevel;
+    public float thresholdConfidenceLevel;
     public Boolean loopFunctionWhilePoseIsHeld;
 
 
@@ -44,7 +44,8 @@ public class UGInferenceRunnerScript : MonoBehaviour
     private IWorker worker;
     private Tensor inputTensor;
     private Tensor outputTensor;
-    private float inferenceOutput;
+    [HideInInspector]
+    public float inferenceOutput;
 
     // Run function variables
     private Boolean eventTriggered = false;
