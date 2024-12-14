@@ -2063,7 +2063,7 @@ PrefabInstance:
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
       propertyPath: gestureName
-      value: thumbsUpRight
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
