@@ -14,7 +14,7 @@ using Unity.Barracuda.ONNX;
 
 // Replaces HandMode enum in JsonWriter.cs in release
 // Enum for selecting which hand(s) the model should use for inference
-public enum HandModeNew
+public enum HandMode
 {
     LeftHand,
     RightHand,
@@ -26,7 +26,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     // Public parameters
     [Header("Setup")]
     public NNModel modelAsset;
-    public HandModeNew inferenceHandMode;
+    public HandMode inferenceHandMode;
     public GameObject dataExtractorObject; // the game object that has the data extractor script attached
     private UGDataExtractorScript dataExtractor; // the data extractor script, taken from dataExtractorObject
     public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
@@ -100,17 +100,17 @@ public class UGInferenceRunnerScript : MonoBehaviour
             Debug.LogError("UGInferenceRunnerScript: dataExtractor is not set.");
             return false;
         }
-        if (inferenceHandMode == HandModeNew.LeftHand && !dataExtractor.leftHandDataEnabled)
+        if (inferenceHandMode == HandMode.LeftHand && !dataExtractor.leftHandDataEnabled)
         {
             Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for left hand data gathering.");
             return false;
         }
-        else if (inferenceHandMode == HandModeNew.RightHand && !dataExtractor.rightHandDataEnabled)
+        else if (inferenceHandMode == HandMode.RightHand && !dataExtractor.rightHandDataEnabled)
         {
             Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for right hand data gathering.");
             return false;
         }
-        else if (inferenceHandMode == HandModeNew.TwoHands && !dataExtractor.twoHandDataEnabled)
+        else if (inferenceHandMode == HandMode.TwoHands && !dataExtractor.twoHandDataEnabled)
         {
             Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for two hands data gathering.");
             return false;
@@ -125,7 +125,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
         int modelInputSize;
-        if (inferenceHandMode == HandModeNew.LeftHand || inferenceHandMode == HandModeNew.RightHand)
+        if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
         {
             modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
         }
@@ -149,11 +149,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
         inferenceTimer = 0;
         // select hand data based on inferenceHandMode
         float[] handData;
-        if (inferenceHandMode == HandModeNew.LeftHand)
+        if (inferenceHandMode == HandMode.LeftHand)
         {
             handData = dataExtractor.leftHandData;
         }
-        else if (inferenceHandMode == HandModeNew.RightHand)
+        else if (inferenceHandMode == HandMode.RightHand)
         {
             handData = dataExtractor.rightHandData;
         }

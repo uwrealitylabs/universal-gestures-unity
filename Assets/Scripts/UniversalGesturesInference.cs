@@ -39,7 +39,7 @@ public class UniversalGesturesInference : MonoBehaviour
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
         int modelInputSize;
-        if (inferenceHandMode == HandMode.OneHand)
+        if (inferenceHandMode == HandMode.RightHand || inferenceHandMode == HandMode.LeftHand)
         {
             modelInputSize = TestingSkeleton.ONE_HAND_NUM_FEATURES;
         }
@@ -59,7 +59,7 @@ public class UniversalGesturesInference : MonoBehaviour
             inferenceTimer = 0;
             // select hand data based on inferenceHandMode
             float[] handData;
-            if (inferenceHandMode == HandMode.OneHand)
+            if (inferenceHandMode == HandMode.RightHand || inferenceHandMode == HandMode.LeftHand)
             {
                 handData = TestingSkeleton.handData;
             }
