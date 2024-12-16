@@ -197,4 +197,57 @@ public class UGInferenceRunnerScript : MonoBehaviour
             }
         }
     }
+
+    // load model at runtime
+    public void LoadModel(string filePath)
+    {
+        // Start loading the NNModel asset using Addressables
+
+        // Check if file exists
+        if (File.Exists(filePath))
+        {
+
+            var nnModel = LoadNNModel(filePath, "name");
+
+
+
+            var loadedModel = ModelLoader.Load(nnModel);
+
+
+            // Dispose of the existing worker if necessary
+            if (worker != null)
+            {
+                worker.Dispose();
+            }
+
+            // Set the loaded model as the runtime model and create a new worker
+            m_RuntimeModel = loadedModel;
+            worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
+
+            Debug.Log("Model loaded successfully from: " + filePath);
+        }
+        else
+        {
+            Debug.LogError("Model file not found at path: " + filePath);
+        }
+
+    }
+    NNModel LoadNNModel(string modelPath, string modelName)
+    {
+        var converter = new ONNXModelConverter(true);
+        Model model = converter.Convert(modelPath);
+        NNModelData modelData = ScriptableObject.CreateInstance<NNModelData>();
+        using (var memoryStream = new MemoryStream())
+        using (var writer = new BinaryWriter(memoryStream))
+        {
+            ModelWriter.Save(writer, model);
+            modelData.Value = memoryStream.ToArray();
+        }
+        modelData.name = "Data";
+        modelData.hideFlags = HideFlags.HideInHierarchy;
+        NNModel result = ScriptableObject.CreateInstance<NNModel>();
+        result.modelData = modelData;
+        result.name = modelName;
+        return result;
+    }
 }

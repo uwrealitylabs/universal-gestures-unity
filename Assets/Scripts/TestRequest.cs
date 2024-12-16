@@ -12,7 +12,7 @@ public class TestRequest : MonoBehaviour
     [SerializeField] string uri = "http://10.10.48.17:8080";
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] UGDataWriterScript writer;
-    [SerializeField] UniversalGesturesInference inference;
+    [SerializeField] UGInferenceRunnerScript inference;
     string apiUrl;
     private void Start()
     {
