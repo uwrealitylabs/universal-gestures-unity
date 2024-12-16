@@ -22,7 +22,7 @@ public class TestRequest : MonoBehaviour
     public void SendTrainingData()
     {
         // TODO, not a clean way to handle URIs
-        if (writer.GetRecordingHandMode() == HandMode.TwoHands)
+        if (writer.recordingHandMode == HandMode.TwoHands)
         {
             apiUrl = uri + "train_model_two_hands/";
         } else
@@ -84,7 +84,7 @@ public class TestRequest : MonoBehaviour
 
 
             string filePath = directory;
-            if (writer.GetRecordingHandMode() == HandMode.TwoHands)
+            if (writer.recordingHandMode == HandMode.TwoHands)
             {
                 filePath += "two_hands.onnx";
             } else

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028373, g: 0.22571398, b: 0.30692294, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -360,11 +360,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3028946304079054868, guid: e41e7a68b0d286247bc5bbc180d1daae,
-        type: 3}
-      propertyPath: jsonWriter
-      value: 
-      objectReference: {fileID: 959056926}
     - target: {fileID: 4727466942809425274, guid: e41e7a68b0d286247bc5bbc180d1daae,
         type: 3}
       propertyPath: m_Name
@@ -475,6 +470,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e41e7a68b0d286247bc5bbc180d1daae, type: 3}
+--- !u!114 &261812149 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2677946362471650199, guid: e41e7a68b0d286247bc5bbc180d1daae,
+    type: 3}
+  m_PrefabInstance: {fileID: 261812148}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a560e3e7adc9be74d97a3cde8420315f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &565963954
 GameObject:
   m_ObjectHideFlags: 0
@@ -1732,7 +1739,7 @@ PrefabInstance:
         type: 3}
       propertyPath: recordingStatusUI
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 261812149}
     - target: {fileID: 7348593397533252515, guid: 34a976a5bd8544fcda36f14413fdde53,
         type: 3}
       propertyPath: rightHand
