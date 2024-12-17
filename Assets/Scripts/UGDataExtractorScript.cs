@@ -15,12 +15,17 @@ public class UGDataExtractorScript : MonoBehaviour
     public bool twoHandDataEnabled = false;
 
     // Data providers
-    [Header("Input Hand Data Sources")]
-    [Help("Note: it is possible not all of the input sources below are used/required.\nThe required properties depend on which data gathering is enabled above.\n\nLeft Hand Data Enabled: requires Left Hand Feature only.\nRight Hand Data Enabled: requires Right Hand Feature only.\nTwo Hand Data Enabled: requires both Left and Right Hand Feature, as well as Left and Right Hand Position Providers.")]
-    public GameObject leftHandFeature;
-    public GameObject rightHandFeature;
-    public GameObject leftHandPositionProvider;
-    public GameObject rightHandPositionProvider;
+    [Header("Advanced Override Settings")]
+    public bool useAdvancedOverrides = false;
+    public GameObject leftHandFeatureOverride;
+    public GameObject rightHandFeatureOverride;
+    public GameObject leftHandPositionProviderOverride;
+    public GameObject rightHandPositionProviderOverride;
+
+    private GameObject leftHandFeature;
+    private GameObject rightHandFeature;
+    private GameObject leftHandPositionProvider;
+    private GameObject rightHandPositionProvider;
 
     // Config for transform features
     private TransformConfig transformConfig;
@@ -40,11 +45,11 @@ public class UGDataExtractorScript : MonoBehaviour
 
     void Start()
     {
-        // Validate configuration
-        bool validConfig = ValidateConfiguration();
-        if (!validConfig)
+        // Set up data sources
+        bool setupSuccess = SetupDataSource();
+        if (!setupSuccess)
         {
-            Debug.LogError("UGDataExtractorScript: Configuration is invalid. Deactivating.");
+            Debug.LogError("UGDataExtractorScript: Data source setup failed. Disabling script.");
             gameObject.SetActive(false);
             return;
         }
@@ -59,13 +64,30 @@ public class UGDataExtractorScript : MonoBehaviour
         {
             FingerFeatureStateProvider leftFingersFeatureProvider = leftHandFeature.GetComponent<FingerFeatureStateProvider>();
             TransformFeatureStateProvider leftTransformFeatureProvider = leftHandFeature.GetComponent<TransformFeatureStateProvider>();
-            leftHandData = GetOneHandData(leftFingersFeatureProvider, leftTransformFeatureProvider);
+            if (leftFingersFeatureProvider == null || leftTransformFeatureProvider == null)
+            {
+                Debug.LogError("UGDataExtractorScript: Left hand feature or transform provider is missing. Disabling left hand data gathering.");
+                leftHandDataEnabled = false;
+            }
+            else
+            {
+
+                leftHandData = GetOneHandData(leftFingersFeatureProvider, leftTransformFeatureProvider);
+            }
         }
         if (rightHandDataEnabled)
         {
             FingerFeatureStateProvider rightFingersFeatureProvider = rightHandFeature.GetComponent<FingerFeatureStateProvider>();
             TransformFeatureStateProvider rightTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
-            rightHandData = GetOneHandData(rightFingersFeatureProvider, rightTransformFeatureProvider);
+            if (rightFingersFeatureProvider == null || rightTransformFeatureProvider == null)
+            {
+                Debug.LogError("UGDataExtractorScript: Right hand feature or transform provider is missing. Disabling right hand data gathering.");
+                rightHandDataEnabled = false;
+            }
+            else
+            {
+                rightHandData = GetOneHandData(rightFingersFeatureProvider, rightTransformFeatureProvider);
+            }
         }
         if (twoHandDataEnabled)
         {
@@ -73,8 +95,77 @@ public class UGDataExtractorScript : MonoBehaviour
             TransformFeatureStateProvider leftTransformFeatureProvider = leftHandFeature.GetComponent<TransformFeatureStateProvider>();
             FingerFeatureStateProvider rightFingersFeatureProvider = rightHandFeature.GetComponent<FingerFeatureStateProvider>();
             TransformFeatureStateProvider rightTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
-            twoHandsData = GetTwoHandsData(leftFingersFeatureProvider, rightFingersFeatureProvider, leftHandPositionProvider, rightHandPositionProvider);
+            if (leftFingersFeatureProvider == null || leftTransformFeatureProvider == null || rightFingersFeatureProvider == null || rightTransformFeatureProvider == null)
+            {
+                Debug.LogError("UGDataExtractorScript: Left or right hand feature or transform provider is missing. Disabling two hands data gathering.");
+                twoHandDataEnabled = false;
+            }
+            else
+            {
+                twoHandsData = GetTwoHandsData(leftFingersFeatureProvider, rightFingersFeatureProvider, leftHandPositionProvider, rightHandPositionProvider);
+            }
         }
+    }
+
+    bool SetupDataSource()
+    {
+        // Use override settings if provided
+        if (useAdvancedOverrides)
+        {
+            leftHandFeature = leftHandFeatureOverride;
+            rightHandFeature = rightHandFeatureOverride;
+            leftHandPositionProvider = leftHandPositionProviderOverride;
+            rightHandPositionProvider = rightHandPositionProviderOverride;
+            if (leftHandFeature == null || rightHandFeature == null || leftHandPositionProvider == null || rightHandPositionProvider == null)
+            {
+                Debug.LogError("UGDataExtractorScript: Advanced overrides enabled, but one or more data sources are missing. Please ensure all data sources are provided.");
+                return false;
+            }
+            return true;
+        }
+
+        // No overrides, automatically find features needed for data extraction
+
+        // if OVRCameraRigInteraction is found, use it as the data source (preferred, latest version)
+        GameObject ovrCameraRigInteraction = GameObject.Find("OVRCameraRigInteraction");
+        if (ovrCameraRigInteraction != null)
+        {
+            leftHandFeature = GameObject.Find("OVRCameraRigInteraction/OVRCameraRig/OVRInteractionComprehensive/OVRHands/LeftHand/HandFeaturesLeft");
+            rightHandFeature = GameObject.Find("OVRCameraRigInteraction/OVRCameraRig/OVRInteractionComprehensive/OVRHands/RightHand/HandFeaturesRight");
+            leftHandPositionProvider = GameObject.Find("OVRCameraRigInteraction/OVRCameraRig/TrackingSpace/LeftHandAnchor/LeftOVRHand");
+            rightHandPositionProvider = GameObject.Find("OVRCameraRigInteraction/OVRCameraRig/TrackingSpace/RightHandAnchor/RightOVRHand");
+            if (leftHandFeature == null || rightHandFeature == null || leftHandPositionProvider == null || rightHandPositionProvider == null)
+            {
+                Debug.LogError("UGDataExtractorScript: Feature extraction failed while reading from OVRCameraRigInteraction.");
+                return false;
+            }
+        }
+        else
+        {
+            // if OVRCameraRigInteraction is not found, alternatively,
+            //   if OculusInteractionSampleRig (which is legacy) is found, use it as the data source
+            GameObject oculusInteractionSampleRig = GameObject.Find("OculusInteractionSampleRig");
+            if (oculusInteractionSampleRig != null)
+            {
+                leftHandFeature = GameObject.Find("OculusInteractionSampleRig/InputOVR/Hands/LeftHand/HandFeatures");
+                rightHandFeature = GameObject.Find("OculusInteractionSampleRig/InputOVR/Hands/RightHand/HandFeatures");
+                leftHandPositionProvider = GameObject.Find("OculusInteractionSampleRig/OVRCameraRig/TrackingSpace/LeftHandAnchor/LeftOVRHand");
+                rightHandPositionProvider = GameObject.Find("OculusInteractionSampleRig/OVRCameraRig/TrackingSpace/RightHandAnchor/RightOVRHand");
+                if (leftHandFeature == null || rightHandFeature == null || leftHandPositionProvider == null || rightHandPositionProvider == null)
+                {
+                    Debug.LogError("UGDataExtractorScript: Feature extraction failed while reading from OculusInteractionSampleRig.");
+                    return false;
+                }
+            }
+            else
+            {
+                // if neither OVRCameraRigInteraction nor OculusInteractionSampleRig is found, return false and log error
+                Debug.LogError("UGDataExtractorScript: No valid data source found. Please ensure OVRCameraRigInteraction or OculusInteractionSampleRig is present in the scene.");
+                return false;
+            }
+        }
+
+        return true;
     }
 
     bool ValidateConfiguration()

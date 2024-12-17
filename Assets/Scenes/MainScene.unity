@@ -1947,55 +1947,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: leftHandFeature
-      value: 
-      objectReference: {fileID: 765505223}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: rightHandFeature
-      value: 
-      objectReference: {fileID: 2140660357}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: twoHandDataEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: leftHandDataEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: rightHandDataEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: leftHandPositionProvider
-      value: 
-      objectReference: {fileID: 1403751960}
-    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: rightHandPositionProvider
-      value: 
-      objectReference: {fileID: 1372119455}
     - target: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
         type: 3}
       propertyPath: m_Name
       value: UGDataExtractor
-      objectReference: {fileID: 0}
-    - target: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8800362338567292361, guid: 4c67175bdea3c4bd68bf5a5471347f89,
-        type: 3}
-      propertyPath: m_TagString
-      value: MainUGDataExtractor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7934101211972861636}
   m_Layer: 0
   m_Name: UGDataExtractor
-  m_TagString: Untagged
+  m_TagString: MainUGDataExtractor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,13 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b61993892fee486a8b43ec0573cae3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHandDataEnabled: 0
-  rightHandDataEnabled: 0
-  twoHandDataEnabled: 0
-  leftHandFeature: {fileID: 0}
-  rightHandFeature: {fileID: 0}
-  leftHandPositionProvider: {fileID: 0}
-  rightHandPositionProvider: {fileID: 0}
+  leftHandDataEnabled: 1
+  rightHandDataEnabled: 1
+  twoHandDataEnabled: 1
   leftHandData: []
   rightHandData: []
   twoHandsData: []
