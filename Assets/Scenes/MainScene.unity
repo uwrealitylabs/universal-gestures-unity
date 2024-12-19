@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028373, g: 0.22571398, b: 0.30692294, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028301, g: 0.22571309, b: 0.30692127, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1185,7 +1185,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1261261668}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TestRequest, Assembly-CSharp
         m_MethodName: SendTrainingData
         m_Mode: 1
@@ -1767,7 +1767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3591191003be74bef804e5d1ebc16e1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uri: http://192.168.2.171:8080/
+  uri: http://10.10.48.17:8080
   text: {fileID: 565075914}
   writer: {fileID: 1261261667}
   inference: {fileID: 1434248041}

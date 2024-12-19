@@ -7,12 +7,15 @@ using System.IO;
 using Newtonsoft.Json;
 
 
-public class TestRequest : MonoBehaviour
+public class UGServerPipeline : MonoBehaviour
 {
     [SerializeField] string uri = "http://10.10.48.17:8080";
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] UGDataWriterScript writer;
     [SerializeField] UGInferenceRunnerScript inference;
+
+    private string twoHandEndpoint = "train_model_two_hands/";
+    private string oneHandEndpoint = "train_model_one_hand/";
     string apiUrl;
     private void Start()
     {
@@ -24,26 +27,21 @@ public class TestRequest : MonoBehaviour
         // TODO, not a clean way to handle URIs
         if (writer.recordingHandMode == HandMode.TwoHands)
         {
-            apiUrl = uri + "train_model_two_hands/";
+            apiUrl = uri + twoHandEndpoint;
         }
         else
         {
-            apiUrl = uri + "train_model_one_hand/";
+            apiUrl = uri + oneHandEndpoint;
         }
         StartCoroutine(SendJsonData());
 
     }
     IEnumerator SendJsonData()
     {
-
-
         // Load the JSON file from Resources (or wherever it's located)
         string jsonPath = writer.writePath;
-
         // Read the JSON file
         string jsonData = File.ReadAllText(jsonPath);
-
-
         // iterate over all but the last one which we read above
         for (int i = 0; i < writer.writePaths.Count - 1; i++)
         {
@@ -68,8 +66,7 @@ public class TestRequest : MonoBehaviour
             // Get the binary data from the response (which is the file)
             byte[] fileData = request.downloadHandler.data;
 
-            // Save the file to a directory in Unity
-            // TODO move this out somewhere else
+            // Save the file to a directory
             string directory = Application.dataPath + "/../serverModels/";
 
             if (Application.platform == RuntimePlatform.Android)
@@ -98,9 +95,9 @@ public class TestRequest : MonoBehaviour
 
 
             Debug.Log("File saved at: " + filePath);
-            text.text = "File Downloaded! LoadingModel";
-
+            text.text = "File Downloaded! Loading Model";
             inference.LoadModel(filePath);
+            text.text = "Loaded model!";
         }
         else
         {
@@ -126,5 +123,9 @@ public class TestRequest : MonoBehaviour
         // Convert back to a JSON string
         return JsonConvert.SerializeObject(list1, Formatting.Indented);
     }
-
+    // clear the data buffer
+    public void clearData()
+    {
+        writer.writePaths = new();
+    }
 }
