@@ -166,6 +166,8 @@ public class UGInferenceRunnerScript : MonoBehaviour
         {
             inputTensor[i] = handData[i];
         }
+
+        Debug.Log("Inference Tensor Size " + inputTensor.length);
         worker.Execute(inputTensor);
         outputTensor = worker.PeekOutput();
         inferenceOutput = outputTensor[0];
@@ -199,7 +201,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     }
 
     // load model at runtime
-    public void LoadModel(string filePath)
+    public bool LoadModel(string filePath, HandMode newHandMode)
     {
         // Start loading the NNModel asset using Addressables
 
@@ -207,12 +209,16 @@ public class UGInferenceRunnerScript : MonoBehaviour
         if (File.Exists(filePath))
         {
 
-            var nnModel = LoadNNModel(filePath, "name");
+            // change paramters
+            inferenceHandMode = newHandMode;
 
+            // check validity of new config
+            bool configurationIsValid = ValidateConfiguration();
 
+            // clean up old inference
 
-            var loadedModel = ModelLoader.Load(nnModel);
-
+            inputTensor.Dispose();
+            outputTensor.Dispose();
 
             // Dispose of the existing worker if necessary
             if (worker != null)
@@ -220,15 +226,39 @@ public class UGInferenceRunnerScript : MonoBehaviour
                 worker.Dispose();
             }
 
+
+
+
+            // setup new inference
+            var nnModel = LoadNNModel(filePath, "name");
+            var loadedModel = ModelLoader.Load(nnModel);
+
+        
             // Set the loaded model as the runtime model and create a new worker
             m_RuntimeModel = loadedModel;
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
 
+
+            // TODO refactor this to remove repeated code
+            int modelInputSize;
+            if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
+            {
+                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+            }
+            else
+            {
+                modelInputSize = UGDataExtractorScript.TWO_HAND_NUM_FEATURES;
+            }
+
+            inputTensor = new Tensor(1, 0, 0, modelInputSize);
+
             Debug.Log("Model loaded successfully from: " + filePath);
+            return true;
         }
         else
         {
             Debug.LogError("Model file not found at path: " + filePath);
+            return false;
         }
 
     }

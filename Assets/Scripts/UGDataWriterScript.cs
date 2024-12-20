@@ -200,16 +200,20 @@ public class UGDataWriterScript : MonoBehaviour
     public void SetRecordingHandModeLeftHand()
     {
         recordingHandMode = HandMode.LeftHand;
+        // clear paths
+        writePaths = new();
     }
 
     public void SetRecordingHandModeRightHand()
     {
         recordingHandMode = HandMode.RightHand;
+        writePaths = new();
     }
 
     // Sets recording hand mode to two hands
     public void SetRecordingHandModeTwoHands()
     {
         recordingHandMode = HandMode.TwoHands;
+        writePaths = new();
     }
 }

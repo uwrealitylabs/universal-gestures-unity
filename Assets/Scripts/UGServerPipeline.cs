@@ -24,7 +24,6 @@ public class UGServerPipeline : MonoBehaviour
 
     public void SendTrainingData()
     {
-        // TODO, not a clean way to handle URIs
         if (writer.recordingHandMode == HandMode.TwoHands)
         {
             apiUrl = uri + twoHandEndpoint;
@@ -79,8 +78,6 @@ public class UGServerPipeline : MonoBehaviour
                     Directory.CreateDirectory(directory);
                 }
             }
-
-
             string filePath = directory;
             if (writer.recordingHandMode == HandMode.TwoHands)
             {
@@ -93,11 +90,17 @@ public class UGServerPipeline : MonoBehaviour
             File.WriteAllBytes(filePath, fileData);
 
 
-
             Debug.Log("File saved at: " + filePath);
             text.text = "File Downloaded! Loading Model";
-            inference.LoadModel(filePath);
-            text.text = "Loaded model!";
+            if (inference.LoadModel(filePath, writer.recordingHandMode))
+            {
+                text.text = "Loaded model!";
+
+            } else
+            {
+                text.text = "Failed to load model!";
+            }
+
         }
         else
         {
