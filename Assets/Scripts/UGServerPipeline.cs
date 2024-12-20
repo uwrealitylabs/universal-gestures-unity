@@ -90,13 +90,14 @@ public class UGServerPipeline : MonoBehaviour
             File.WriteAllBytes(filePath, fileData);
 
 
-            Debug.Log("File saved at: " + filePath);
+            // Debug.Log("File saved at: " + filePath);
             text.text = "File Downloaded! Loading Model";
             if (inference.LoadModel(filePath, writer.recordingHandMode))
             {
                 text.text = "Loaded model!";
 
-            } else
+            }
+            else
             {
                 text.text = "Failed to load model!";
             }

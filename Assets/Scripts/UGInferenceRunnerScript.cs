@@ -171,7 +171,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
         worker.Execute(inputTensor);
         outputTensor = worker.PeekOutput();
         inferenceOutput = outputTensor[0];
-        Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
+        // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
     }
 
     void RunFunctionIfPoseDetected()
@@ -223,7 +223,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             var nnModel = LoadNNModel(filePath, "name");
             var loadedModel = ModelLoader.Load(nnModel);
 
-        
+
             // Set the loaded model as the runtime model and create a new worker
             m_RuntimeModel = loadedModel;
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
@@ -241,7 +241,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
 
             inputTensor = new Tensor(1, 0, 0, modelInputSize);
 
-            Debug.Log("Model loaded successfully from: " + filePath);
+            // Debug.Log("Model loaded successfully from: " + filePath);
             return true;
         }
         else
