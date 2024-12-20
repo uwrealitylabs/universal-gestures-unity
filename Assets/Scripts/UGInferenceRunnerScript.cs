@@ -167,7 +167,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             inputTensor[i] = handData[i];
         }
 
-        Debug.Log("Inference Tensor Size " + inputTensor.length);
+        //Debug.Log("Inference Tensor Size " + inputTensor.length);
         worker.Execute(inputTensor);
         outputTensor = worker.PeekOutput();
         inferenceOutput = outputTensor[0];
@@ -208,26 +208,16 @@ public class UGInferenceRunnerScript : MonoBehaviour
         // Check if file exists
         if (File.Exists(filePath))
         {
-
             // change paramters
             inferenceHandMode = newHandMode;
-
-            // check validity of new config
-            bool configurationIsValid = ValidateConfiguration();
-
             // clean up old inference
-
             inputTensor.Dispose();
             outputTensor.Dispose();
-
             // Dispose of the existing worker if necessary
             if (worker != null)
             {
                 worker.Dispose();
             }
-
-
-
 
             // setup new inference
             var nnModel = LoadNNModel(filePath, "name");
@@ -238,8 +228,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             m_RuntimeModel = loadedModel;
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
 
-
-            // TODO refactor this to remove repeated code
+            // Remake tensor
             int modelInputSize;
             if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
             {
