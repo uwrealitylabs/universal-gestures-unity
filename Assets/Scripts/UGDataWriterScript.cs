@@ -85,11 +85,11 @@ public class UGDataWriterScript : MonoBehaviour
         {
             // Save to persistent data path on Android to avoid permission issues and persist data
             jsonDir = Application.persistentDataPath + "/JsonData/";
-            // Create JsonData directory if it doesn't exist
-            if (!Directory.Exists(jsonDir))
-            {
-                Directory.CreateDirectory(jsonDir);
-            }
+        }
+        // Create JsonData directory if it doesn't exist
+        if (!Directory.Exists(jsonDir))
+        {
+            Directory.CreateDirectory(jsonDir);
         }
         // record file name includes timestamp
         string path = jsonDir + recordingFileName;

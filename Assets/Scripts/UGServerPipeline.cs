@@ -72,11 +72,11 @@ public class UGServerPipeline : MonoBehaviour
             {
                 // Save to persistent data path on Android to avoid permission issues and persist data
                 directory = Application.persistentDataPath + "/serverModels/";
-                // Create JsonData directory if it doesn't exist
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
+            }
+            // Create directory if it doesn't exist
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
             }
             string filePath = directory;
             if (writer.recordingHandMode == HandMode.TwoHands)
