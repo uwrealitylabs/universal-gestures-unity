@@ -169,4 +169,14 @@ public class RecordingStatusUI : MonoBehaviour
         RecordingItem recordingItem = item.GetComponent<RecordingItem>();
         recordingItem.Initialize(name, null);
     }
+
+    public void SetGestureName(string name)
+    {
+        gestureNameText.text = name;
+    }
+
+    public void SetFileDir(string dir)
+    {
+        targetFolderText.text = dir;
+    }
 }

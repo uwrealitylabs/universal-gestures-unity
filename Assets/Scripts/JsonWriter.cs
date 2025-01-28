@@ -44,8 +44,11 @@ public class JsonWriter : MonoBehaviour
     private float startRecordingTime; // Time when data recording started
     public string recordingFileName; // Name of file to save data to
     private HandMode recordingHandMode = HandMode.TwoHands; // recordingHandMode = HandMode.OneHand to record data for one hand, TwoHands to record data for two hands
+    [SerializeField]
+    [Range(1f, 99f)]
     private float recordingDuration; // Duration of recording in seconds
     private float recordingStartDelay = 3.0f; // Delay before recording starts
+    [SerializeField]
     private string gestureName;
     private string jsonDir;
     public string writePath;
@@ -59,10 +62,11 @@ public class JsonWriter : MonoBehaviour
 
     private void Start()
     {
-        gestureName = ControlInEditor.GetGestureName();
-        recordingDuration = ControlInEditor.GetRecordingDuration();
+       
         jsonDir = Application.dataPath + "/../JsonData/"; // Current directory to save json files
         RecordingItem.SetFolderDir(jsonDir);
+        recordingStatusUI.SetFileDir(jsonDir);
+        recordingStatusUI.SetGestureName(gestureName);
     }
 
     // JsonWrite(gestureData) writes gestureData to json file with name "{gestureName}.json" in JsonData directory.  If file doesn't exist, creates it.
