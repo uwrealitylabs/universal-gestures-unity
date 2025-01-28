@@ -47,8 +47,6 @@ public class RecordingStatusUI : MonoBehaviour
         intent = Intent.Positive;
         countdownText.text = "";
         countdownRecordStatusText.text = "";
-        gestureNameText.text = jsonWriter.GetGestureName();
-        targetFolderText.text = jsonWriter.getJsonDir();
         MakeInitialRecordingList();
     }
 
