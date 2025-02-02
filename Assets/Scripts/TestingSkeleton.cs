@@ -14,9 +14,7 @@ public class TestingSkeleton : MonoBehaviour
     private TransformConfig handTransformConfig;
     public Transform wristTransform;
     public TransformRecognizerActiveState transformRecognizerActiveState;
-    public const int ONE_HAND_NUM_FEATURES = 17;
-    // currently, transform features with 21 parameters are not working, so we are using 17 parameters until it's fixed
-    // public const int ONE_HAND_NUM_FEATURES = 21; 
+    public const int ONE_HAND_NUM_FEATURES = 21; 
     public static float[] handData;
 
     // Start is called before the first frame update
@@ -90,11 +88,10 @@ public class TestingSkeleton : MonoBehaviour
             pinkyFingerCurl,
             pinkyFingerFlexion,
             pinkyFingerOpposition,
-            // currently, transform features with 21 parameters are not working, so we are using 17 parameters until it's fixed
-            // wristUp,
-            // palmUp,
-            // palmTowardsFace,
-            // fingersUp,
+            wristUp,
+            palmUp,
+            palmTowardsFace,
+            fingersUp
         };
     }
 }
