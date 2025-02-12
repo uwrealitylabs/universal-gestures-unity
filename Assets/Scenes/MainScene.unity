@@ -3463,7 +3463,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0.1, y: 0.1, z: 0, w: 0}
+  m_margin: {x: 0.1, y: 0.1, z: -0.5759113, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -4103,12 +4103,12 @@ PrefabInstance:
         type: 3}
       propertyPath: modelAsset
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: d0410f58e0ca548f8a708a848869e6ff,
+      objectReference: {fileID: 5022602860645237092, guid: ced2d1f0e11de496f9e42cb9de50f738,
         type: 3}
     - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
       propertyPath: inferenceHandMode
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
