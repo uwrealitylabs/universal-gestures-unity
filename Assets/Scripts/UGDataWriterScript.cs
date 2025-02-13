@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 
 // -- JSON File Writer --
@@ -43,6 +44,7 @@ public class UGDataWriterScript : MonoBehaviour
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
+    public bool recordTransformData;
 
     private RecordingStatusUI recordingStatusUI;
     private UGDataExtractorScript dataExtractor;
@@ -132,10 +134,18 @@ public class UGDataWriterScript : MonoBehaviour
             if (recordingHandMode == HandMode.LeftHand)
             {
                 handData = dataExtractor.leftHandData;
+                if (recordTransformData)
+                {
+                    handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray(); // kinda weird, find better solution later
+                }
             }
             else if (recordingHandMode == HandMode.RightHand)
             {
                 handData = dataExtractor.rightHandData;
+                if (recordTransformData)
+                {
+                    handData = handData.Concat(dataExtractor.rightHandTransformData).ToArray();
+                }
             }
             else
             {
