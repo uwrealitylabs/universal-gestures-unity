@@ -136,7 +136,7 @@ public class UGDataWriterScript : MonoBehaviour
                 handData = dataExtractor.leftHandData;
                 if (recordTransformData)
                 {
-                    handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray(); // kinda weird, find better solution later
+                    handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
                 }
             }
             else if (recordingHandMode == HandMode.RightHand)

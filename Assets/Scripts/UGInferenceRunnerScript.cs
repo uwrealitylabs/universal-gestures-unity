@@ -162,7 +162,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             handData = dataExtractor.leftHandData;
             if (useTransformData)
             {
-                handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray(); // kinda weird, find better solution later
+                handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
             }
         }
         else if (inferenceHandMode == HandMode.RightHand)
@@ -176,6 +176,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
         else
         {
             handData = dataExtractor.twoHandsData;
+        }
+
+        if (inputTensor.shape[0] != handData.Length)
+        {
+            Debug.LogWarning("Model input size is not equal to size of data. Check that Inference Hand Mode and Use Transform Data are set correctly");
         }
         // update input tensor with new hand data
         for (int i = 0; i < handData.Length; i++)
