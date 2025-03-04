@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028373, g: 0.22571398, b: 0.30692294, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2657,6 +2657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: gestureName
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
+        type: 3}
+      propertyPath: gestureType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
