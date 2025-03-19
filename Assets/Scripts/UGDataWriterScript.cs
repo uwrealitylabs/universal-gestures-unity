@@ -43,6 +43,10 @@ public class UGDataWriterScript : MonoBehaviour
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
+    
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip startSound;
+    [SerializeField] private AudioClip endSound;
 
     private RecordingStatusUI recordingStatusUI;
     private UGDataExtractorScript dataExtractor;
@@ -184,12 +188,24 @@ public class UGDataWriterScript : MonoBehaviour
         recordingStatus = desiredRecordingStatus;
         recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
         startRecordingTime = Time.time;
+
+        // Play start sound
+        if (audioSource != null && startSound != null)
+        {
+            audioSource.PlayOneShot(startSound);
+        }
     }
 
     // Stops recording data
     public void StopRecording()
     {
         recordingStatus = RecordingStatus.NotRecording;
+
+        // Play end sound
+        if (audioSource != null && endSound != null)
+        {
+            audioSource.PlayOneShot(endSound);
+        }
     }
 
     public void SetRecordingHandModeOneHand()
