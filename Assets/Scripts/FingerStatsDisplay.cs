@@ -13,7 +13,7 @@ public class FingerStatsDisplay : MonoBehaviour
     void Start()
     {
         // Ensure both arrays are of the same length
-        if (textMeshObjects.Length != TestingSkeleton.ONE_HAND_NUM_FEATURES)
+        if (textMeshObjects.Length != UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES)
         {
             Debug.LogError("TextMeshPro objects and hand data arrays must be of the same length!");
             gameObject.SetActive(false);
@@ -39,9 +39,13 @@ public class FingerStatsDisplay : MonoBehaviour
     void LateUpdate()
     {
         // Update each TextMeshPro object with the corresponding value
-        for (int i = 0; i < textMeshObjects.Length; i++)
+        for (int i = 0; i < UGDataExtractorScript.ONE_HAND_NUM_FEATURES; i++)
         {
             textMeshObjects[i].text = System.Math.Round(dataExtractor.rightHandData[i], 2).ToString();
+        }
+        for (int i = 0; i < UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES; i++)
+        {
+            textMeshObjects[UGDataExtractorScript.ONE_HAND_NUM_FEATURES + i].text = System.Math.Round(dataExtractor.rightHandTransformData[i], 2).ToString();
         }
     }
 

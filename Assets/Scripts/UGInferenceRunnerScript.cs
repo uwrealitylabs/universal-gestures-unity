@@ -27,6 +27,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     [Header("Setup")]
     public NNModel modelAsset;
     public HandMode inferenceHandMode;
+    public Boolean useTransformData;
     public GameObject dataExtractorObject; // the game object that has the data extractor script attached
     private UGDataExtractorScript dataExtractor; // the data extractor script, taken from dataExtractorObject
     public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
@@ -127,7 +128,14 @@ public class UGInferenceRunnerScript : MonoBehaviour
         int modelInputSize;
         if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
         {
-            modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+            if (useTransformData)
+            {
+                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES;
+            }
+            else
+            {
+                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+            }
         }
         else
         {
@@ -152,14 +160,27 @@ public class UGInferenceRunnerScript : MonoBehaviour
         if (inferenceHandMode == HandMode.LeftHand)
         {
             handData = dataExtractor.leftHandData;
+            if (useTransformData)
+            {
+                handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
+            }
         }
         else if (inferenceHandMode == HandMode.RightHand)
         {
             handData = dataExtractor.rightHandData;
+            if (useTransformData)
+            {
+                handData = handData.Concat(dataExtractor.rightHandTransformData).ToArray();
+            }
         }
         else
         {
             handData = dataExtractor.twoHandsData;
+        }
+
+        if (inputTensor.shape[0] != handData.Length)
+        {
+            Debug.LogWarning("Model input size is not equal to size of data. Check that Inference Hand Mode and Use Transform Data are set correctly");
         }
         // update input tensor with new hand data
         for (int i = 0; i < handData.Length; i++)
@@ -232,7 +253,14 @@ public class UGInferenceRunnerScript : MonoBehaviour
             int modelInputSize;
             if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
             {
-                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+                if (useTransformData)
+                {
+                    modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES;
+                }
+                else
+                {
+                    modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+                }
             }
             else
             {

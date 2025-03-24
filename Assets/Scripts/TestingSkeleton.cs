@@ -14,9 +14,7 @@ public class TestingSkeleton : MonoBehaviour
     private TransformConfig handTransformConfig;
     public Transform wristTransform;
     public TransformRecognizerActiveState transformRecognizerActiveState;
-    public const int ONE_HAND_NUM_FEATURES = 17;
-    // currently, transform features with 21 parameters are not working, so we are using 17 parameters until it's fixed
-    // public const int ONE_HAND_NUM_FEATURES = 21; 
+    public const int ONE_HAND_NUM_FEATURES = 21; 
     public static float[] handData;
 
     // Start is called before the first frame update
@@ -60,16 +58,9 @@ public class TestingSkeleton : MonoBehaviour
         float pinkyFingerOpposition = rightFingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
         float wristUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristUp) ?? 0.0f;
-        // float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
         float palmUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmUp) ?? 0.0f;
-        // float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
         float palmTowardsFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
-        // float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
         float fingersUp = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersUp) ?? 0.0f;
-        // float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
-        // float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
-
-        // Debug.Log("Wrist Up: " + wristUp + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Fingers Up: " + fingersUp + ", Pinch Clear: " + pinchClear);
 
         // Add values to JsonWriter.GestureData.handData
         handData = new[] {
@@ -90,11 +81,10 @@ public class TestingSkeleton : MonoBehaviour
             pinkyFingerCurl,
             pinkyFingerFlexion,
             pinkyFingerOpposition,
-            // currently, transform features with 21 parameters are not working, so we are using 17 parameters until it's fixed
-            // wristUp,
-            // palmUp,
-            // palmTowardsFace,
-            // fingersUp,
+            wristUp,
+            palmUp,
+            palmTowardsFace,
+            fingersUp
         };
     }
 }

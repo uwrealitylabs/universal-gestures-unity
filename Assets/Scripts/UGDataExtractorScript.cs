@@ -16,6 +16,8 @@ public class UGDataExtractorScript : MonoBehaviour
     public OVRHand rightOVRHand;
     private FingerFeatureStateProvider leftFingerFeatureStateProvider;
     private FingerFeatureStateProvider rightFingerFeatureStateProvider;
+    private TransformFeatureStateProvider leftTransformFeatureProvider;
+    private TransformFeatureStateProvider rightTransformFeatureProvider;
 
     // Data gathering settings - determines which features are analyzed
     [Header("Enable/Disable Data Gathering")]
@@ -32,10 +34,15 @@ public class UGDataExtractorScript : MonoBehaviour
     [HideInInspector]
     public float[] rightHandData;
     [HideInInspector]
+    public float[] leftHandTransformData;
+    [HideInInspector]
+    public float[] rightHandTransformData;
+    [HideInInspector]
     public float[] twoHandsData;
 
     // Constants
     public const int ONE_HAND_NUM_FEATURES = 17;
+    public const int ONE_HAND_TRANSFORM_NUM_FEATURES = 4;
     public const int TWO_HAND_NUM_FEATURES = 44;
 
 
@@ -58,14 +65,13 @@ public class UGDataExtractorScript : MonoBehaviour
         // Update data from enabled sources
         if (leftHandDataEnabled)
         {
-            // comment out one hand transform features until they are implemented
-            // TransformFeatureStateProvider leftTransformFeatureProvider = leftHandFeature.GetComponent<TransformFeatureStateProvider>();
             leftHandData = GetOneHandData(leftFingerFeatureStateProvider);
+            leftHandTransformData = GetOneHandTransformData(leftTransformFeatureProvider);
         }
         if (rightHandDataEnabled)
         {
-            // TransformFeatureStateProvider rightTransformFeatureProvider = rightHandFeature.GetComponent<TransformFeatureStateProvider>();
             rightHandData = GetOneHandData(rightFingerFeatureStateProvider);
+            rightHandTransformData = GetOneHandTransformData(rightTransformFeatureProvider);
         }
         if (twoHandDataEnabled)
         {
@@ -85,6 +91,8 @@ public class UGDataExtractorScript : MonoBehaviour
         // get finger feature state providers
         leftFingerFeatureStateProvider = leftHand.GetComponentInChildren<FingerFeatureStateProvider>();
         rightFingerFeatureStateProvider = rightHand.GetComponentInChildren<FingerFeatureStateProvider>();
+        leftTransformFeatureProvider = leftHand.GetComponentInChildren<TransformFeatureStateProvider>();
+        rightTransformFeatureProvider = rightHand.GetComponentInChildren<TransformFeatureStateProvider>();
         if (leftFingerFeatureStateProvider == null || rightFingerFeatureStateProvider == null)
         {
             Debug.LogError("UGDataExtractorScript: Data source setup failed. Ensure left hand and right hand have children with FingerFeatureStateProvider components.");
@@ -94,8 +102,6 @@ public class UGDataExtractorScript : MonoBehaviour
     }
 
     private float[] GetOneHandData(FingerFeatureStateProvider fingersFeatureProvider)
-    // comment out one hand transform features until they are implemented
-    // private float[] GetOneHandData(FingerFeatureStateProvider fingersFeatureProvider, TransformFeatureStateProvider transformFeatureProvider)
     {
 
         float indexFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
@@ -122,19 +128,6 @@ public class UGDataExtractorScript : MonoBehaviour
         float pinkyFingerFlexion = fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
         float pinkyFingerOpposition = fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
 
-        // comment out one hand transform features until they are implemented
-        // float wristUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.WristUp) ?? 0.0f;
-        // // float wristDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.WristDown) ?? 0.0f;
-        // float palmUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmUp) ?? 0.0f;
-        // // float palmDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmDown) ?? 0.0f;
-        // float palmTowardsFace = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
-        // // float palmAwayFromFace = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PalmAwayFromFace) ?? 0.0f;
-        // float fingersUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.FingersUp) ?? 0.0f;
-        // // float fingersDown = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.FingersDown) ?? 0.0f;
-        // // float pinchClear = handTransformFeatureProvider.GetFeatureValue(handTransformConfig, TransformFeature.PinchClear) ?? 0.0f;
-
-        // Debug.Log("Wrist Up: " + wristUp + ", Palm Up: " + palmUp + ", Palm Towards Face: " + palmTowardsFace + ", Fingers Up: " + fingersUp + ", Pinch Clear: " + pinchClear);
-
         float[] handData = new[] {
             thumbFingerCurl,
             thumbFingerAbduction,
@@ -152,15 +145,28 @@ public class UGDataExtractorScript : MonoBehaviour
             ringFingerOpposition,
             pinkyFingerCurl,
             pinkyFingerFlexion,
-            pinkyFingerOpposition,
-            // comment out one hand transform features until they are implemented
-            // wristUp,
-            // palmUp,
-            // palmTowardsFace,
-            // fingersUp,
+            pinkyFingerOpposition
         };
 
         return handData;
+    }
+
+    private float[] GetOneHandTransformData(TransformFeatureStateProvider transformFeatureProvider)
+    {
+        float wristUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.WristUp) ?? 0.0f;
+        float palmUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmUp) ?? 0.0f;
+        float palmTowardsFace = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
+        float fingersUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.FingersUp) ?? 0.0f;
+
+        float[] transformData =
+        {
+            wristUp,
+            palmUp,
+            palmTowardsFace,
+            fingersUp
+        };
+
+        return transformData;
     }
 
     private float[] GetTwoHandsData()
