@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028373, g: 0.22571398, b: 0.30692294, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1867,7 +1867,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 3345977186529955973}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1261261666}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c6157012cef38b4fb232ed0232643d1, type: 3}
   m_Name: 
@@ -1888,6 +1888,27 @@ MonoBehaviour:
   text: {fileID: 565075914}
   writer: {fileID: 1261261667}
   inference: {fileID: 1434248041}
+--- !u!114 &1261261669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261261666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ced027d238d62438a1277a461fcc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataExtractorObject: {fileID: 1816441470}
+  recordingHandMode: 1
+  recordingDuration: 10
+  recordingStartDelay: 3
+  gestureLabel: 
+  recordingStatus: 0
+  writePath: 
+  writePaths: []
+  recordingFileName: 
 --- !u!1001 &1301797855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2655,6 +2676,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
+        type: 3}
       propertyPath: gestureName
       value: 
       objectReference: {fileID: 0}
@@ -2676,6 +2702,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1261261668}
+    - targetCorrespondingSourceObject: {fileID: 6721793604255239403, guid: cf3c54520fa034d48b7004ccd9debe74,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1261261669}
   m_SourcePrefab: {fileID: 100100000, guid: cf3c54520fa034d48b7004ccd9debe74, type: 3}
 --- !u!1001 &4417044162525332782
 PrefabInstance:
