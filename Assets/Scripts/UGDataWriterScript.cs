@@ -1,3 +1,4 @@
+
 using System;
 using System.IO;
 using System.Text;
@@ -45,6 +46,7 @@ public class UGDataWriterScript : MonoBehaviour
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
     public bool recordTransformData;
+    public bool recordPositionalData;
 
     private RecordingStatusUI recordingStatusUI;
     private UGDataExtractorScript dataExtractor;
@@ -138,6 +140,11 @@ public class UGDataWriterScript : MonoBehaviour
                 {
                     handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
                 }
+                if (recordPositionalData)
+                {
+                    handData = handData.Concat(dataExtractor.leftHandMovementData).ToArray();
+                    handData = handData.Concat(dataExtractor.leftFingerPositionData).ToArray();
+                }
             }
             else if (recordingHandMode == HandMode.RightHand)
             {
@@ -146,10 +153,22 @@ public class UGDataWriterScript : MonoBehaviour
                 {
                     handData = handData.Concat(dataExtractor.rightHandTransformData).ToArray();
                 }
+                if (recordPositionalData)
+                {
+                    handData = handData.Concat(dataExtractor.rightHandMovementData).ToArray();
+                    handData = handData.Concat(dataExtractor.rightFingerPositionData).ToArray();
+                }
             }
             else
             {
                 handData = dataExtractor.twoHandsData;
+                if (recordPositionalData)
+                {
+                    handData = handData.Concat(dataExtractor.leftHandMovementData).ToArray();
+                    handData = handData.Concat(dataExtractor.rightHandMovementData).ToArray();
+                    handData = handData.Concat(dataExtractor.leftFingerPositionData).ToArray();
+                    handData = handData.Concat(dataExtractor.rightFingerPositionData).ToArray();
+                }
             }
             gestureData.handData = handData;
 
@@ -227,3 +246,4 @@ public class UGDataWriterScript : MonoBehaviour
         writePaths = new();
     }
 }
+

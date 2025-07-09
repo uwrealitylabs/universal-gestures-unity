@@ -4,6 +4,8 @@ using UnityEngine;
 using Oculus.Interaction;
 using Oculus.Interaction.PoseDetection;
 using Oculus.Interaction.Input;
+using System.Linq;
+
 
 public class UGDataExtractorScript : MonoBehaviour
 {
@@ -14,6 +16,8 @@ public class UGDataExtractorScript : MonoBehaviour
     public Hand rightHand;
     public OVRHand leftOVRHand;
     public OVRHand rightOVRHand;
+    public OVRSkeleton leftOVRSkeleton;
+    public OVRSkeleton rightOVRSkeleton;
     private FingerFeatureStateProvider leftFingerFeatureStateProvider;
     private FingerFeatureStateProvider rightFingerFeatureStateProvider;
     private TransformFeatureStateProvider leftTransformFeatureProvider;
@@ -24,6 +28,7 @@ public class UGDataExtractorScript : MonoBehaviour
     public bool leftHandDataEnabled = false;
     public bool rightHandDataEnabled = false;
     public bool twoHandDataEnabled = false;
+    public bool positionalDataEnabled = false;
 
     // Config for transform features
     private TransformConfig transformConfig;
@@ -38,7 +43,22 @@ public class UGDataExtractorScript : MonoBehaviour
     [HideInInspector]
     public float[] rightHandTransformData;
     [HideInInspector]
+    public float[] leftHandMovementData;
+    [HideInInspector]
+    public float[] rightHandMovementData;
+    [HideInInspector]
+    public float[] leftFingerPositionData;
+    [HideInInspector]
+    public float[] rightFingerPositionData;
+    [HideInInspector]
     public float[] twoHandsData;
+
+    // Hand data for position and velocity calculations - not used by other scripts
+    private float leftXprev, leftYprev, leftZprev;
+    private float rightXprev, rightYprev, rightZprev;
+    private float leftVelXprev, leftVelYprev, leftVelZprev;
+    private float rightVelXprev, rightVelYprev, rightVelZprev;
+
 
     // Constants
     public const int ONE_HAND_NUM_FEATURES = 17;
@@ -67,24 +87,42 @@ public class UGDataExtractorScript : MonoBehaviour
         {
             leftHandData = GetOneHandData(leftFingerFeatureStateProvider);
             leftHandTransformData = GetOneHandTransformData(leftTransformFeatureProvider);
+            if (positionalDataEnabled)
+            {
+                leftHandMovementData = GetHandMovementData(leftOVRHand, ref leftXprev, ref leftYprev, ref leftZprev, ref leftVelXprev, ref leftVelYprev, ref leftVelZprev);
+                leftFingerPositionData = GetHandJointPositionData(leftOVRSkeleton);
+            }
+
         }
         if (rightHandDataEnabled)
         {
             rightHandData = GetOneHandData(rightFingerFeatureStateProvider);
             rightHandTransformData = GetOneHandTransformData(rightTransformFeatureProvider);
+            if (positionalDataEnabled)
+            {
+                rightHandMovementData = GetHandMovementData(rightOVRHand, ref rightXprev, ref rightYprev, ref rightZprev, ref rightVelXprev, ref rightVelYprev, ref rightVelZprev);
+                rightFingerPositionData = GetHandJointPositionData(rightOVRSkeleton);
+            }
         }
         if (twoHandDataEnabled)
         {
             twoHandsData = GetTwoHandsData();
+            if (positionalDataEnabled)
+            {
+                leftHandMovementData = GetHandMovementData(leftOVRHand, ref leftXprev, ref leftYprev, ref leftZprev, ref leftVelXprev, ref leftVelYprev, ref leftVelZprev);
+                rightHandMovementData = GetHandMovementData(rightOVRHand, ref rightXprev, ref rightYprev, ref rightZprev, ref rightVelXprev, ref rightVelYprev, ref rightVelZprev);
+                leftFingerPositionData = GetHandJointPositionData(leftOVRSkeleton);
+                rightFingerPositionData = GetHandJointPositionData(rightOVRSkeleton);
+            }
         }
     }
 
     bool SetupAndValidateConfiguration()
     {
         // ensure all required data sources are provided
-        if (leftHand == null || rightHand == null || leftOVRHand == null || rightOVRHand == null)
+        if (leftHand == null || rightHand == null || leftOVRHand == null || rightOVRHand == null || leftOVRSkeleton == null || rightOVRSkeleton == null)
         {
-            Debug.LogError("UGDataExtractorScript: Data source setup failed. Ensure left hand, right hand, left OVR hand, and right OVR hand are provided.");
+            Debug.LogError("UGDataExtractorScript: Data source setup failed. Ensure left/right hand, left/right OVR hand, and left/right OVR skeleton are provided.");
             return false;
         }
 
@@ -230,23 +268,28 @@ public class UGDataExtractorScript : MonoBehaviour
         // ========================================
         // TWO-HAND RELATIVE FEATURES
         // ========================================
+
+        // Position 
         float leftX = leftOVRHand.transform.position[0];
         float leftY = leftOVRHand.transform.position[1];
         float leftZ = leftOVRHand.transform.position[2];
         float rightX = rightOVRHand.transform.position[0];
         float rightY = rightOVRHand.transform.position[1];
         float rightZ = rightOVRHand.transform.position[2];
+
         float xDiff = rightX - leftX;
         float yDiff = rightY - leftY;
         float zDiff = rightZ - leftZ;
         float distance = Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
 
+        // Rotation
         float leftRotationX = leftOVRHand.transform.rotation.eulerAngles[0];
         float leftRotationY = leftOVRHand.transform.rotation.eulerAngles[1];
         float leftRotationZ = leftOVRHand.transform.rotation.eulerAngles[2];
         float rightRotationX = rightOVRHand.transform.rotation.eulerAngles[0];
         float rightRotationY = rightOVRHand.transform.rotation.eulerAngles[1];
         float rightRotationZ = rightOVRHand.transform.rotation.eulerAngles[2];
+
         float rotationXDiff = rightRotationX - leftRotationX;
         float rotationYDiff = rightRotationY - leftRotationY;
         float rotationZDiff = rightRotationZ - leftRotationZ;
@@ -256,7 +299,8 @@ public class UGDataExtractorScript : MonoBehaviour
         float rotationYCos = Mathf.Cos(rotationYDiff);
         float rotationZSin = Mathf.Sin(rotationZDiff);
         float rotationZCos = Mathf.Cos(rotationZDiff);
-        // Debug.Log("Rotation X Diff: " + rotationXDiff + ", Rotation Y Diff: " + rotationYDiff + ", Rotation Z Diff: " + rotationZDiff);
+
+        Debug.Log("Rotation X Diff: " + rotationXDiff + ", Rotation Y Diff: " + rotationYDiff + ", Rotation Z Diff: " + rotationZDiff);
 
         // Debug.Log("Index finger values: " + rightIndexFingerCurl + ", " + rightIndexFingerAbduction + ", " + rightIndexFingerFlexion + ", " + rightIndexFingerOpposition);
 
@@ -265,4 +309,75 @@ public class UGDataExtractorScript : MonoBehaviour
                    xDiff, yDiff, zDiff, distance, rotationXSin, rotationXCos, rotationYSin, rotationYCos, rotationZSin, rotationZCos };
         return handData;
     }
+
+    private float[] GetHandMovementData(OVRHand ovrHand, ref float Xprev, ref float Yprev, ref float Zprev, ref float VelXprev, ref float VelYprev, ref float VelZprev)
+    {
+        float X = ovrHand.transform.position[0];
+        float Y = ovrHand.transform.position[1];
+        float Z = ovrHand.transform.position[2];
+        float RotationX = ovrHand.transform.rotation.eulerAngles[0];
+        float RotationY = ovrHand.transform.rotation.eulerAngles[1];
+        float RotationZ = ovrHand.transform.rotation.eulerAngles[2];
+
+        float dt = Time.deltaTime;
+
+        float VelX = (X - Xprev) / dt;
+        float VelY = (Y - Yprev) / dt;
+        float VelZ = (Z - Zprev) / dt;
+        float AccelX = (VelX - VelXprev) / dt;
+        float AccelY = (VelY - VelYprev) / dt;
+        float AccelZ = (VelZ - VelZprev) / dt;
+
+        Xprev = X;
+        Yprev = Y;
+        Zprev = Z;
+        VelXprev = VelX;
+        VelYprev = VelY;
+        VelZprev = VelZ;
+
+        float ConfidenceVal = ovrHand.HandConfidence == OVRHand.TrackingConfidence.High ? 1.0f : 0.0f;
+
+        float[] HandMovement = new[] {
+            X, Y, Z, RotationX, RotationY, RotationZ, VelX, VelY, VelZ, AccelX, AccelY, AccelZ, ConfidenceVal
+        };
+        return HandMovement;
+    }
+
+
+    private float[] GetHandJointPositionData(OVRSkeleton ovrSkeleton)
+    {
+        Transform thumbTip = ovrSkeleton.Bones.FirstOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_ThumbTip).Transform;
+        Transform indexTip = ovrSkeleton.Bones.FirstOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_IndexTip).Transform;
+        Transform middleTip = ovrSkeleton.Bones.FirstOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_MiddleTip).Transform;
+        Transform ringTip = ovrSkeleton.Bones.FirstOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_RingTip).Transform;
+        Transform pinkyTip = ovrSkeleton.Bones.FirstOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_PinkyTip).Transform;
+
+        float thumbX = thumbTip.position[0];
+        float thumbY = thumbTip.position[1];
+        float thumbZ = thumbTip.position[2];
+        float indexX = indexTip.position[0];
+        float indexY = indexTip.position[1];
+        float indexZ = indexTip.position[2];
+        float middleX = middleTip.position[0];
+        float middleY = middleTip.position[1];
+        float middleZ = middleTip.position[2];
+        float ringX = ringTip.position[0];
+        float ringY = ringTip.position[1];
+        float ringZ = ringTip.position[2];
+        float pinkyX = pinkyTip.position[0];
+        float pinkyY = pinkyTip.position[1];
+        float pinkyZ = pinkyTip.position[2];
+
+        float[] JointPosition = new[] {
+            thumbX, thumbY, thumbZ, indexX, indexY, indexZ, middleX, middleY, middleZ, ringX, ringY, ringZ, pinkyX, pinkyY, pinkyZ
+        };
+        return JointPosition;
+
+    }
+
+
+
+
+
 }
+
