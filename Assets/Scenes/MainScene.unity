@@ -4103,8 +4103,13 @@ PrefabInstance:
         type: 3}
       propertyPath: modelAsset
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: ced2d1f0e11de496f9e42cb9de50f738,
+      objectReference: {fileID: 5022602860645237092, guid: 0ff8898533637794ea87164716d83506,
         type: 3}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: useTransformData
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
       propertyPath: inferenceHandMode

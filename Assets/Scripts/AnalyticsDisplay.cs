@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ public class AnalyticsDisplay : MonoBehaviour
     }
     private void Update()
     {
-        inferenceOutputText.text = "Inference Output: " + inferenceRunner.inferenceOutput;
-        thresholdConfidenceText.text = "Threshold Confidence: " + inferenceRunner.thresholdConfidenceLevel;
+        inferenceOutputText.text = "Inference Output: [" + string.Join(", ", inferenceRunner.inferenceOutput.Select(x => x.ToString("F4"))) + "]";
+        // thresholdConfidenceText.text = "Threshold Confidence: " + inferenceRunner.thresholdConfidenceLevel;
     }
 }

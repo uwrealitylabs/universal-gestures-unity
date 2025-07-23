@@ -18,7 +18,7 @@ public enum HandMode
 {
     LeftHand,
     RightHand,
-    TwoHands
+    TwoHands,
 }
 
 public class UGInferenceRunnerScript : MonoBehaviour
@@ -46,7 +46,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     private Tensor inputTensor;
     private Tensor outputTensor;
     [HideInInspector]
-    public float inferenceOutput;
+    public float[] inferenceOutput;
 
     // Run function variables
     private Boolean eventTriggered = false;
@@ -74,7 +74,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             RunInference();
         }
 
-        RunFunctionIfPoseDetected();
+        // RunFunctionIfPoseDetected();
     }
 
     bool ValidateConfiguration()
@@ -119,29 +119,25 @@ public class UGInferenceRunnerScript : MonoBehaviour
         return true;
     }
 
+    int GetModelInputSize()
+    {
+        if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
+            return useTransformData ? UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES : UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+        else if (inferenceHandMode == HandMode.TwoHands)
+            return UGDataExtractorScript.TWO_HAND_NUM_FEATURES;
+        else
+            return -1;
+    }
+
     void SetupInference()
     {
         // Initialize model and worker needed to run inference
         // see docs for more information on this script: https://docs.unity3d.com/Packages/com.unity.barracuda%401.0/manual/GettingStarted.html
         m_RuntimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
-        int modelInputSize;
-        if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
-        {
-            if (useTransformData)
-            {
-                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES;
-            }
-            else
-            {
-                modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
-            }
-        }
-        else
-        {
-            modelInputSize = UGDataExtractorScript.TWO_HAND_NUM_FEATURES;
-        }
-        inputTensor = new Tensor(1, 0, 0, modelInputSize);
+        int modelInputSize = GetModelInputSize();
+        Debug.Log("Model Input Size: " + modelInputSize);
+        inputTensor = new Tensor(1, 1, 1, modelInputSize);
     }
 
     void OnDestroy()
@@ -157,69 +153,61 @@ public class UGInferenceRunnerScript : MonoBehaviour
         inferenceTimer = 0;
         // select hand data based on inferenceHandMode
         float[] handData;
-        if (inferenceHandMode == HandMode.LeftHand)
-        {
-            handData = dataExtractor.leftHandData;
-            if (useTransformData)
-            {
-                handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
-            }
+        if (inferenceHandMode == HandMode.LeftHand) {
+            handData = dataExtractor.leftHandData; // Already includes transform data
         }
-        else if (inferenceHandMode == HandMode.RightHand)
-        {
-            handData = dataExtractor.rightHandData;
-            if (useTransformData)
-            {
-                handData = handData.Concat(dataExtractor.rightHandTransformData).ToArray();
-            }
+        else if (inferenceHandMode == HandMode.RightHand) {
+            handData = dataExtractor.rightHandData; // Already includes transform data
         }
-        else
-        {
+        else if (inferenceHandMode == HandMode.TwoHands)
             handData = dataExtractor.twoHandsData;
-        }
+        else
+            return;
 
-        if (inputTensor.shape[0] != handData.Length)
-        {
-            Debug.LogWarning("Model input size is not equal to size of data. Check that Inference Hand Mode and Use Transform Data are set correctly");
-        }
-        // update input tensor with new hand data
+        if (inputTensor.shape[3] != handData.Length)
+            Debug.LogWarning("Model input size is not equal to size of data: " + inputTensor.shape[3] + " != " + handData.Length + ". Check that Inference Hand Mode and Use Transform Data are set correctly");
+
+        Debug.Log("Hand Data Length: " + handData.Length);
+        Debug.Log("Input Tensor Shape: " + inputTensor.shape[0] + " " + inputTensor.shape[1] + " " + inputTensor.shape[2] + " " + inputTensor.shape[3]);
+        Debug.Log("Input Tensor Length: " + inputTensor.length);
+
         for (int i = 0; i < handData.Length; i++)
-        {
-            inputTensor[i] = handData[i];
-        }
+            inputTensor[0, 0, 0, i] = handData[i];
 
         //Debug.Log("Inference Tensor Size " + inputTensor.length);
         worker.Execute(inputTensor);
         outputTensor = worker.PeekOutput();
-        inferenceOutput = outputTensor[0];
+        inferenceOutput = new float[outputTensor.length];
+        for (int i = 0; i < outputTensor.length; i++)
+            inferenceOutput[i] = outputTensor[i];
         // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
     }
 
-    void RunFunctionIfPoseDetected()
-    {
-        if (loopFunctionWhilePoseIsHeld)
-        {
-            // loops function while the pose is being held
-            if (inferenceOutput >= thresholdConfidenceLevel)
-            {
-                functionToRun.Invoke();
-            }
-        }
-        else
-        {
-            // triggers function once if the pose is detected
-            // function can be triggered again only after the pose is not being held anymore
-            if (!eventTriggered && inferenceOutput >= thresholdConfidenceLevel)
-            {
-                functionToRun.Invoke();
-                eventTriggered = true;
-            }
-            else if (eventTriggered && inferenceOutput < thresholdConfidenceLevel)
-            {
-                eventTriggered = false;
-            }
-        }
-    }
+    // void RunFunctionIfPoseDetected()
+    // {
+    //     if (loopFunctionWhilePoseIsHeld)
+    //     {
+    //         // loops function while the pose is being held
+    //         if (inferenceOutput >= thresholdConfidenceLevel)
+    //         {
+    //             functionToRun.Invoke();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // triggers function once if the pose is detected
+    //         // function can be triggered again only after the pose is not being held anymore
+    //         if (!eventTriggered && inferenceOutput >= thresholdConfidenceLevel)
+    //         {
+    //             functionToRun.Invoke();
+    //             eventTriggered = true;
+    //         }
+    //         else if (eventTriggered && inferenceOutput < thresholdConfidenceLevel)
+    //         {
+    //             eventTriggered = false;
+    //         }
+    //     }
+    // }
 
     // load model at runtime
     public bool LoadModel(string filePath, HandMode newHandMode)
@@ -236,9 +224,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             outputTensor.Dispose();
             // Dispose of the existing worker if necessary
             if (worker != null)
-            {
                 worker.Dispose();
-            }
 
             // setup new inference
             var nnModel = LoadNNModel(filePath, "name");
@@ -250,24 +236,8 @@ public class UGInferenceRunnerScript : MonoBehaviour
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
 
             // Remake tensor
-            int modelInputSize;
-            if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
-            {
-                if (useTransformData)
-                {
-                    modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES;
-                }
-                else
-                {
-                    modelInputSize = UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
-                }
-            }
-            else
-            {
-                modelInputSize = UGDataExtractorScript.TWO_HAND_NUM_FEATURES;
-            }
-
-            inputTensor = new Tensor(1, 0, 0, modelInputSize);
+            int modelInputSize = GetModelInputSize();
+            inputTensor = new Tensor(1, 1, 1, modelInputSize);
 
             // Debug.Log("Model loaded successfully from: " + filePath);
             return true;
@@ -277,7 +247,6 @@ public class UGInferenceRunnerScript : MonoBehaviour
             Debug.LogError("Model file not found at path: " + filePath);
             return false;
         }
-
     }
     NNModel LoadNNModel(string modelPath, string modelName)
     {

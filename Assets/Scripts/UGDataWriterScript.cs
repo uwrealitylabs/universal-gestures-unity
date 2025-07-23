@@ -26,15 +26,14 @@ using System.Linq;
 // ]
 
 
+
 public enum RecordingStatus
 {
     NotRecording,
     RecordingNegative,
-    RecordingPositive
+    RecordingPositive,
 }
-
-
-
+    
 public class UGDataWriterScript : MonoBehaviour
 {
     // Public parameters
@@ -45,6 +44,14 @@ public class UGDataWriterScript : MonoBehaviour
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
     public bool recordTransformData;
+
+    public static Dictionary<string, int> gestureLableMap = new Dictionary<string, int>()
+    {
+        {"closed_fist", 0},
+        {"finger_gun", 1},
+        {"peace_sign", 2},
+        {"thumbs_up", 3},
+    };
 
     private RecordingStatusUI recordingStatusUI;
     private UGDataExtractorScript dataExtractor;
@@ -61,7 +68,7 @@ public class UGDataWriterScript : MonoBehaviour
     public string recordingFileName; // Name of file to save data to
     class GestureData
     {
-        public int confidence; // confidence of gesture (label)
+        public float[] confidences; // confidence of gesture (label)
         public float[] handData; // float array of hand position data (features)
     }
 
@@ -90,9 +97,7 @@ public class UGDataWriterScript : MonoBehaviour
         }
         // Create JsonData directory if it doesn't exist
         if (!Directory.Exists(jsonDir))
-        {
             Directory.CreateDirectory(jsonDir);
-        }
         // record file name includes timestamp
         string path = jsonDir + recordingFileName;
         writePath = path;
@@ -104,10 +109,10 @@ public class UGDataWriterScript : MonoBehaviour
             writePaths.Add(path);
         }
         FileStream stream = new FileStream(path, FileMode.Open);
+
         if (stream.Length == 0)
-        {
             prefix = "[\n    ";
-        }
+
         stream.Position = Math.Max(stream.Length - 2, 0);
         string jsonString = prefix + JsonUtility.ToJson(gestureData) + suffix;
         byte[] insertBytes = Encoding.ASCII.GetBytes(jsonString);
@@ -135,17 +140,13 @@ public class UGDataWriterScript : MonoBehaviour
             {
                 handData = dataExtractor.leftHandData;
                 if (recordTransformData)
-                {
-                    handData = handData.Concat(dataExtractor.leftHandTransformData).ToArray();
-                }
+                    handData = handData.Concat(dataExtractor.leftTransformData).ToArray();
             }
             else if (recordingHandMode == HandMode.RightHand)
             {
                 handData = dataExtractor.rightHandData;
                 if (recordTransformData)
-                {
-                    handData = handData.Concat(dataExtractor.rightHandTransformData).ToArray();
-                }
+                    handData = handData.Concat(dataExtractor.rightTransformData).ToArray();
             }
             else
             {
@@ -156,11 +157,11 @@ public class UGDataWriterScript : MonoBehaviour
             // Set confidence based on recordingStatus (positive or negative data)
             if (recordingStatus == RecordingStatus.RecordingPositive)
             {
-                gestureData.confidence = 1;
+                gestureData.confidences[0] = 1;
             }
             else if (recordingStatus == RecordingStatus.RecordingNegative)
             {
-                gestureData.confidence = 0;
+                gestureData.confidences[0] = 0;
             }
 
             JsonWrite(gestureData);

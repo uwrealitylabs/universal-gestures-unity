@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Oculus.Interaction;
 using Oculus.Interaction.PoseDetection;
@@ -24,6 +25,7 @@ public class UGDataExtractorScript : MonoBehaviour
     public bool leftHandDataEnabled = false;
     public bool rightHandDataEnabled = false;
     public bool twoHandDataEnabled = false;
+    public bool useTransformData = false;
 
     // Config for transform features
     private TransformConfig transformConfig;
@@ -34,9 +36,13 @@ public class UGDataExtractorScript : MonoBehaviour
     [HideInInspector]
     public float[] rightHandData;
     [HideInInspector]
-    public float[] leftHandTransformData;
+    public float[] leftFingerData;
     [HideInInspector]
-    public float[] rightHandTransformData;
+    public float[] rightFingerData;
+    [HideInInspector]
+    public float[] leftTransformData;
+    [HideInInspector]
+    public float[] rightTransformData;
     [HideInInspector]
     public float[] twoHandsData;
 
@@ -65,13 +71,25 @@ public class UGDataExtractorScript : MonoBehaviour
         // Update data from enabled sources
         if (leftHandDataEnabled)
         {
-            leftHandData = GetOneHandData(leftFingerFeatureStateProvider);
-            leftHandTransformData = GetOneHandTransformData(leftTransformFeatureProvider);
+            leftFingerData = GetOneHandData(leftFingerFeatureStateProvider);
+            if (useTransformData)
+            {
+                leftTransformData = GetOneHandTransformData(leftTransformFeatureProvider);
+                leftHandData = leftFingerData.Concat(leftTransformData).ToArray();
+            }
+            else
+                leftHandData = leftFingerData;
         }
         if (rightHandDataEnabled)
         {
-            rightHandData = GetOneHandData(rightFingerFeatureStateProvider);
-            rightHandTransformData = GetOneHandTransformData(rightTransformFeatureProvider);
+            rightFingerData = GetOneHandData(rightFingerFeatureStateProvider);
+            if (useTransformData)
+            {
+                rightTransformData = GetOneHandTransformData(rightTransformFeatureProvider);
+                rightHandData = rightFingerData.Concat(rightTransformData).ToArray();
+            }
+            else
+                rightHandData = rightFingerData;
         }
         if (twoHandDataEnabled)
         {
