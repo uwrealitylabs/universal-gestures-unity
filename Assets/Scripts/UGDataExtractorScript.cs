@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Oculus.Interaction;
-using Oculus.Interaction.PoseDetection;
 using Oculus.Interaction.Input;
+using Oculus.Interaction.PoseDetection;
+using UnityEngine;
 
 public class UGDataExtractorScript : MonoBehaviour
 {
-
     // Data sources
     [Header("Specify Data Sources")]
     public Hand leftHand;
@@ -33,16 +32,22 @@ public class UGDataExtractorScript : MonoBehaviour
     // Hand data output arrays - used by other scripts
     [HideInInspector]
     public float[] leftHandData;
+
     [HideInInspector]
     public float[] rightHandData;
+
     [HideInInspector]
     public float[] leftFingerData;
+
     [HideInInspector]
     public float[] rightFingerData;
+
     [HideInInspector]
     public float[] leftTransformData;
+
     [HideInInspector]
     public float[] rightTransformData;
+
     [HideInInspector]
     public float[] twoHandsData;
 
@@ -50,7 +55,6 @@ public class UGDataExtractorScript : MonoBehaviour
     public const int ONE_HAND_NUM_FEATURES = 17;
     public const int ONE_HAND_TRANSFORM_NUM_FEATURES = 4;
     public const int TWO_HAND_NUM_FEATURES = 44;
-
 
     void Start()
     {
@@ -102,18 +106,26 @@ public class UGDataExtractorScript : MonoBehaviour
         // ensure all required data sources are provided
         if (leftHand == null || rightHand == null || leftOVRHand == null || rightOVRHand == null)
         {
-            Debug.LogError("UGDataExtractorScript: Data source setup failed. Ensure left hand, right hand, left OVR hand, and right OVR hand are provided.");
+            Debug.LogError(
+                "UGDataExtractorScript: Data source setup failed. Ensure left hand, right hand, left OVR hand, and right OVR hand are provided."
+            );
             return false;
         }
 
         // get finger feature state providers
-        leftFingerFeatureStateProvider = leftHand.GetComponentInChildren<FingerFeatureStateProvider>();
-        rightFingerFeatureStateProvider = rightHand.GetComponentInChildren<FingerFeatureStateProvider>();
-        leftTransformFeatureProvider = leftHand.GetComponentInChildren<TransformFeatureStateProvider>();
-        rightTransformFeatureProvider = rightHand.GetComponentInChildren<TransformFeatureStateProvider>();
+        leftFingerFeatureStateProvider =
+            leftHand.GetComponentInChildren<FingerFeatureStateProvider>();
+        rightFingerFeatureStateProvider =
+            rightHand.GetComponentInChildren<FingerFeatureStateProvider>();
+        leftTransformFeatureProvider =
+            leftHand.GetComponentInChildren<TransformFeatureStateProvider>();
+        rightTransformFeatureProvider =
+            rightHand.GetComponentInChildren<TransformFeatureStateProvider>();
         if (leftFingerFeatureStateProvider == null || rightFingerFeatureStateProvider == null)
         {
-            Debug.LogError("UGDataExtractorScript: Data source setup failed. Ensure left hand and right hand have children with FingerFeatureStateProvider components.");
+            Debug.LogError(
+                "UGDataExtractorScript: Data source setup failed. Ensure left hand and right hand have children with FingerFeatureStateProvider components."
+            );
             return false;
         }
         return true;
@@ -121,32 +133,58 @@ public class UGDataExtractorScript : MonoBehaviour
 
     private float[] GetOneHandData(FingerFeatureStateProvider fingersFeatureProvider)
     {
+        float indexFingerCurl =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
+        float indexFingerAbduction =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction)
+            ?? 0.0f;
+        float indexFingerFlexion =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
+        float indexFingerOpposition =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition)
+            ?? 0.0f;
 
-        float indexFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
-        float indexFingerAbduction = fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f;
-        float indexFingerFlexion = fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
-        float indexFingerOpposition = fingersFeatureProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f;
-
-        float thumbFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
-        float thumbFingerAbduction = fingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
+        float thumbFingerCurl =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
+        float thumbFingerAbduction =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction)
+            ?? 0.0f;
         // Flexion, Opposition not available on thumb
 
-        float middleFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
-        float middleFingerAbduction = fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
-        float middleFingerFlexion = fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
-        float middleFingerOpposition = fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f;
+        float middleFingerCurl =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
+        float middleFingerAbduction =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction)
+            ?? 0.0f;
+        float middleFingerFlexion =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion)
+            ?? 0.0f;
+        float middleFingerOpposition =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition)
+            ?? 0.0f;
 
-        float ringFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
-        float ringFingerAbduction = fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f;
-        float ringFingerFlexion = fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
-        float ringFingerOpposition = fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f;
+        float ringFingerCurl =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
+        float ringFingerAbduction =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction)
+            ?? 0.0f;
+        float ringFingerFlexion =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
+        float ringFingerOpposition =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition)
+            ?? 0.0f;
 
-        float pinkyFingerCurl = fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
+        float pinkyFingerCurl =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
         // Pinky does not support abduction
-        float pinkyFingerFlexion = fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
-        float pinkyFingerOpposition = fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
+        float pinkyFingerFlexion =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
+        float pinkyFingerOpposition =
+            fingersFeatureProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition)
+            ?? 0.0f;
 
-        float[] handData = new[] {
+        float[] handData = new[]
+        {
             thumbFingerCurl,
             thumbFingerAbduction,
             indexFingerCurl,
@@ -163,7 +201,7 @@ public class UGDataExtractorScript : MonoBehaviour
             ringFingerOpposition,
             pinkyFingerCurl,
             pinkyFingerFlexion,
-            pinkyFingerOpposition
+            pinkyFingerOpposition,
         };
 
         return handData;
@@ -171,18 +209,22 @@ public class UGDataExtractorScript : MonoBehaviour
 
     private float[] GetOneHandTransformData(TransformFeatureStateProvider transformFeatureProvider)
     {
-        float wristUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.WristUp) ?? 0.0f;
-        float palmUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmUp) ?? 0.0f;
-        float palmTowardsFace = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmTowardsFace) ?? 0.0f;
-        float fingersUp = transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.FingersUp) ?? 0.0f;
+        float wristUp =
+            transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.WristUp)
+            ?? 0.0f;
+        float palmUp =
+            transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.PalmUp)
+            ?? 0.0f;
+        float palmTowardsFace =
+            transformFeatureProvider.GetFeatureValue(
+                transformConfig,
+                TransformFeature.PalmTowardsFace
+            ) ?? 0.0f;
+        float fingersUp =
+            transformFeatureProvider.GetFeatureValue(transformConfig, TransformFeature.FingersUp)
+            ?? 0.0f;
 
-        float[] transformData =
-        {
-            wristUp,
-            palmUp,
-            palmTowardsFace,
-            fingersUp
-        };
+        float[] transformData = { wristUp, palmUp, palmTowardsFace, fingersUp };
 
         return transformData;
     }
@@ -192,58 +234,156 @@ public class UGDataExtractorScript : MonoBehaviour
         // ========================================
         // LEFT HAND FEATURES
         // ========================================
-        float leftIndexFingerCurl = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
-        float leftIndexFingerAbduction = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f;
-        float leftIndexFingerFlexion = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
-        float leftIndexFingerOpposition = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f;
+        float leftIndexFingerCurl =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl)
+            ?? 0.0f;
+        float leftIndexFingerAbduction =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Index,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
+        float leftIndexFingerFlexion =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion)
+            ?? 0.0f;
+        float leftIndexFingerOpposition =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Index,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float leftThumbFingerCurl = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
-        float leftThumbFingerAbduction = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
+        float leftThumbFingerCurl =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl)
+            ?? 0.0f;
+        float leftThumbFingerAbduction =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Thumb,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
         // Flexion, Opposition not available on thumb
 
-        float leftMiddleFingerCurl = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
-        float leftMiddleFingerAbduction = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
-        float leftMiddleFingerFlexion = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
-        float leftMiddleFingerOpposition = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f;
+        float leftMiddleFingerCurl =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl)
+            ?? 0.0f;
+        float leftMiddleFingerAbduction =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Middle,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
+        float leftMiddleFingerFlexion =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion)
+            ?? 0.0f;
+        float leftMiddleFingerOpposition =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Middle,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float leftRingFingerCurl = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
-        float leftRingFingerAbduction = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f;
-        float leftRingFingerFlexion = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
-        float leftRingFingerOpposition = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f;
+        float leftRingFingerCurl =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl)
+            ?? 0.0f;
+        float leftRingFingerAbduction =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction)
+            ?? 0.0f;
+        float leftRingFingerFlexion =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion)
+            ?? 0.0f;
+        float leftRingFingerOpposition =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Ring,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float leftPinkyFingerCurl = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
+        float leftPinkyFingerCurl =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl)
+            ?? 0.0f;
         // Pinky does not support abduction
-        float leftPinkyFingerFlexion = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
-        float leftPinkyFingerOpposition = leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
-
+        float leftPinkyFingerFlexion =
+            leftFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion)
+            ?? 0.0f;
+        float leftPinkyFingerOpposition =
+            leftFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Pinky,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
         // ========================================
         // RIGHT HAND FEATURES
         // ========================================
-        float rightIndexFingerCurl = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl) ?? 0.0f;
-        float rightIndexFingerAbduction = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Abduction) ?? 0.0f;
-        float rightIndexFingerFlexion = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion) ?? 0.0f;
-        float rightIndexFingerOpposition = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Opposition) ?? 0.0f;
+        float rightIndexFingerCurl =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Curl)
+            ?? 0.0f;
+        float rightIndexFingerAbduction =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Index,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
+        float rightIndexFingerFlexion =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Index, FingerFeature.Flexion)
+            ?? 0.0f;
+        float rightIndexFingerOpposition =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Index,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float rightThumbFingerCurl = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl) ?? 0.0f;
-        float rightThumbFingerAbduction = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Abduction) ?? 0.0f;
+        float rightThumbFingerCurl =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Thumb, FingerFeature.Curl)
+            ?? 0.0f;
+        float rightThumbFingerAbduction =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Thumb,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
         // Flexion, Opposition not available on thumb
 
-        float rightMiddleFingerCurl = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl) ?? 0.0f;
-        float rightMiddleFingerAbduction = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Abduction) ?? 0.0f;
-        float rightMiddleFingerFlexion = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Flexion) ?? 0.0f;
-        float rightMiddleFingerOpposition = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Opposition) ?? 0.0f;
+        float rightMiddleFingerCurl =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Middle, FingerFeature.Curl)
+            ?? 0.0f;
+        float rightMiddleFingerAbduction =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Middle,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
+        float rightMiddleFingerFlexion =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Middle,
+                FingerFeature.Flexion
+            ) ?? 0.0f;
+        float rightMiddleFingerOpposition =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Middle,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float rightRingFingerCurl = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl) ?? 0.0f;
-        float rightRingFingerAbduction = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Abduction) ?? 0.0f;
-        float rightRingFingerFlexion = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion) ?? 0.0f;
-        float rightRingFingerOpposition = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Opposition) ?? 0.0f;
+        float rightRingFingerCurl =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Curl)
+            ?? 0.0f;
+        float rightRingFingerAbduction =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Ring,
+                FingerFeature.Abduction
+            ) ?? 0.0f;
+        float rightRingFingerFlexion =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Ring, FingerFeature.Flexion)
+            ?? 0.0f;
+        float rightRingFingerOpposition =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Ring,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
-        float rightPinkyFingerCurl = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl) ?? 0.0f;
+        float rightPinkyFingerCurl =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Curl)
+            ?? 0.0f;
         // Pinky does not support abduction
-        float rightPinkyFingerFlexion = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion) ?? 0.0f;
-        float rightPinkyFingerOpposition = rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Opposition) ?? 0.0f;
-
+        float rightPinkyFingerFlexion =
+            rightFingerFeatureStateProvider.GetFeatureValue(HandFinger.Pinky, FingerFeature.Flexion)
+            ?? 0.0f;
+        float rightPinkyFingerOpposition =
+            rightFingerFeatureStateProvider.GetFeatureValue(
+                HandFinger.Pinky,
+                FingerFeature.Opposition
+            ) ?? 0.0f;
 
         // ========================================
         // TWO-HAND RELATIVE FEATURES
@@ -278,9 +418,53 @@ public class UGDataExtractorScript : MonoBehaviour
 
         // Debug.Log("Index finger values: " + rightIndexFingerCurl + ", " + rightIndexFingerAbduction + ", " + rightIndexFingerFlexion + ", " + rightIndexFingerOpposition);
 
-        float[] handData = new[] { rightThumbFingerCurl, rightThumbFingerAbduction, rightIndexFingerCurl, rightIndexFingerAbduction, rightIndexFingerFlexion, rightIndexFingerOpposition, rightMiddleFingerCurl, rightMiddleFingerAbduction, rightMiddleFingerFlexion, rightMiddleFingerOpposition, rightRingFingerCurl, rightRingFingerAbduction, rightRingFingerFlexion, rightRingFingerOpposition, rightPinkyFingerCurl, rightPinkyFingerFlexion, rightPinkyFingerOpposition,
-                   leftThumbFingerCurl, leftThumbFingerAbduction, leftIndexFingerCurl, leftIndexFingerAbduction, leftIndexFingerFlexion, leftIndexFingerOpposition, leftMiddleFingerCurl, leftMiddleFingerAbduction, leftMiddleFingerFlexion, leftMiddleFingerOpposition, leftRingFingerCurl, leftRingFingerAbduction, leftRingFingerFlexion, leftRingFingerOpposition, leftPinkyFingerCurl, leftPinkyFingerFlexion, leftPinkyFingerOpposition,
-                   xDiff, yDiff, zDiff, distance, rotationXSin, rotationXCos, rotationYSin, rotationYCos, rotationZSin, rotationZCos };
+        float[] handData = new[]
+        {
+            rightThumbFingerCurl,
+            rightThumbFingerAbduction,
+            rightIndexFingerCurl,
+            rightIndexFingerAbduction,
+            rightIndexFingerFlexion,
+            rightIndexFingerOpposition,
+            rightMiddleFingerCurl,
+            rightMiddleFingerAbduction,
+            rightMiddleFingerFlexion,
+            rightMiddleFingerOpposition,
+            rightRingFingerCurl,
+            rightRingFingerAbduction,
+            rightRingFingerFlexion,
+            rightRingFingerOpposition,
+            rightPinkyFingerCurl,
+            rightPinkyFingerFlexion,
+            rightPinkyFingerOpposition,
+            leftThumbFingerCurl,
+            leftThumbFingerAbduction,
+            leftIndexFingerCurl,
+            leftIndexFingerAbduction,
+            leftIndexFingerFlexion,
+            leftIndexFingerOpposition,
+            leftMiddleFingerCurl,
+            leftMiddleFingerAbduction,
+            leftMiddleFingerFlexion,
+            leftMiddleFingerOpposition,
+            leftRingFingerCurl,
+            leftRingFingerAbduction,
+            leftRingFingerFlexion,
+            leftRingFingerOpposition,
+            leftPinkyFingerCurl,
+            leftPinkyFingerFlexion,
+            leftPinkyFingerOpposition,
+            xDiff,
+            yDiff,
+            zDiff,
+            distance,
+            rotationXSin,
+            rotationXCos,
+            rotationYSin,
+            rotationYCos,
+            rotationZSin,
+            rotationZCos,
+        };
         return handData;
     }
 }

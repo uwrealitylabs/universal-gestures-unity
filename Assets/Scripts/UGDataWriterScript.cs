@@ -1,11 +1,10 @@
 using System;
-using System.IO;
-using System.Text;
-using UnityEngine;
 using System.Collections.Generic;
-using TMPro;
+using System.IO;
 using System.Linq;
-
+using System.Text;
+using TMPro;
+using UnityEngine;
 
 // -- JSON File Writer --
 // Press the Rec. Pos. or Rec. Neg. buttons when scene is running to
@@ -33,39 +32,37 @@ public enum RecordingStatus
     RecordingNegative,
     RecordingPositive,
 }
-    
+
 public class UGDataWriterScript : MonoBehaviour
 {
     // Public parameters
     public GameObject dataExtractorObject;
     public HandMode recordingHandMode;
+
     // recordingHandMode = OneHand to record data for one hand, TwoHands to record data for two hands
     public float recordingDuration = 10.0f; // Duration of recording in seconds
     public float recordingStartDelay = 3.0f; // Delay before recording starts
     public string gestureName;
     public bool recordTransformData;
 
-    public static Dictionary<string, int> gestureLableMap = new Dictionary<string, int>()
-    {
-        {"closed_fist", 0},
-        {"finger_gun", 1},
-        {"peace_sign", 2},
-        {"thumbs_up", 3},
-    };
-
     private RecordingStatusUI recordingStatusUI;
     private UGDataExtractorScript dataExtractor;
     private RecordingStatus desiredRecordingStatus; // Whether to record positive or negative data
     private float timeToStartRecording = -1; // Time to start recording (used to delay recording start)
     private float startRecordingTime; // Time when data recording started
+
     [HideInInspector]
     public RecordingStatus recordingStatus;
+
     [HideInInspector]
     public string writePath;
+
     [HideInInspector]
     public List<string> writePaths = new();
+
     [HideInInspector]
     public string recordingFileName; // Name of file to save data to
+
     class GestureData
     {
         public float[] confidences; // confidence of gesture (label)
@@ -76,7 +73,9 @@ public class UGDataWriterScript : MonoBehaviour
     {
         if (dataExtractorObject == null)
         {
-            Debug.LogError("UGDataWriterScript: dataExtractorObject is not set. Please set it in the inspector.");
+            Debug.LogError(
+                "UGDataWriterScript: dataExtractorObject is not set. Please set it in the inspector."
+            );
             gameObject.SetActive(false);
             return;
         }
@@ -174,7 +173,6 @@ public class UGDataWriterScript : MonoBehaviour
         }
     }
 
-
     // Begins delay before positive data recording starts
     public void StartRecordingPositiveIntent()
     {
@@ -193,7 +191,8 @@ public class UGDataWriterScript : MonoBehaviour
     public void StartRecording()
     {
         recordingStatus = desiredRecordingStatus;
-        recordingFileName = gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+        recordingFileName =
+            gestureName + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
         startRecordingTime = Time.time;
     }
 

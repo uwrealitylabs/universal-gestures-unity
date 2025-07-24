@@ -1,16 +1,15 @@
 using System;
-using SD = System.Diagnostics;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq; // idk if its good to have this installed
-using Unity.Barracuda;
 using TMPro;
-using UnityEditor;
+using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
-
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Events;
+using SD = System.Diagnostics;
 
 // Replaces HandMode enum in JsonWriter.cs in release
 // Enum for selecting which hand(s) the model should use for inference
@@ -33,11 +32,12 @@ public class UGInferenceRunnerScript : MonoBehaviour
     public float inferenceInterval = 0.5f; // how often to run inference (in seconds)
 
     [Header("Run Function on Detection")]
-    [SerializeField] private UnityEvent functionToRun;
+    [SerializeField]
+    private UnityEvent functionToRun;
+
     [Range(0.0f, 1.0f)]
     public float thresholdConfidenceLevel;
     public Boolean loopFunctionWhilePoseIsHeld;
-
 
     // Inference variables
     private Model m_RuntimeModel;
@@ -45,6 +45,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     private IWorker worker;
     private Tensor inputTensor;
     private Tensor outputTensor;
+
     [HideInInspector]
     public float[] inferenceOutput;
 
@@ -57,7 +58,9 @@ public class UGInferenceRunnerScript : MonoBehaviour
         bool configurationIsValid = ValidateConfiguration();
         if (!configurationIsValid)
         {
-            Debug.LogError("UGInferenceRunnerScript: Configuration is not valid, inference will not run. See console logs for more information.");
+            Debug.LogError(
+                "UGInferenceRunnerScript: Configuration is not valid, inference will not run. See console logs for more information."
+            );
             gameObject.SetActive(false);
             return;
         }
@@ -103,17 +106,23 @@ public class UGInferenceRunnerScript : MonoBehaviour
         }
         if (inferenceHandMode == HandMode.LeftHand && !dataExtractor.leftHandDataEnabled)
         {
-            Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for left hand data gathering.");
+            Debug.LogError(
+                "UGInferenceRunnerScript: dataExtractor is not enabled for left hand data gathering."
+            );
             return false;
         }
         else if (inferenceHandMode == HandMode.RightHand && !dataExtractor.rightHandDataEnabled)
         {
-            Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for right hand data gathering.");
+            Debug.LogError(
+                "UGInferenceRunnerScript: dataExtractor is not enabled for right hand data gathering."
+            );
             return false;
         }
         else if (inferenceHandMode == HandMode.TwoHands && !dataExtractor.twoHandDataEnabled)
         {
-            Debug.LogError("UGInferenceRunnerScript: dataExtractor is not enabled for two hands data gathering.");
+            Debug.LogError(
+                "UGInferenceRunnerScript: dataExtractor is not enabled for two hands data gathering."
+            );
             return false;
         }
         return true;
@@ -122,7 +131,10 @@ public class UGInferenceRunnerScript : MonoBehaviour
     int GetModelInputSize()
     {
         if (inferenceHandMode == HandMode.LeftHand || inferenceHandMode == HandMode.RightHand)
-            return useTransformData ? UGDataExtractorScript.ONE_HAND_NUM_FEATURES + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES : UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
+            return useTransformData
+                ? UGDataExtractorScript.ONE_HAND_NUM_FEATURES
+                    + UGDataExtractorScript.ONE_HAND_TRANSFORM_NUM_FEATURES
+                : UGDataExtractorScript.ONE_HAND_NUM_FEATURES;
         else if (inferenceHandMode == HandMode.TwoHands)
             return UGDataExtractorScript.TWO_HAND_NUM_FEATURES;
         else
@@ -153,10 +165,12 @@ public class UGInferenceRunnerScript : MonoBehaviour
         inferenceTimer = 0;
         // select hand data based on inferenceHandMode
         float[] handData;
-        if (inferenceHandMode == HandMode.LeftHand) {
+        if (inferenceHandMode == HandMode.LeftHand)
+        {
             handData = dataExtractor.leftHandData; // Already includes transform data
         }
-        else if (inferenceHandMode == HandMode.RightHand) {
+        else if (inferenceHandMode == HandMode.RightHand)
+        {
             handData = dataExtractor.rightHandData; // Already includes transform data
         }
         else if (inferenceHandMode == HandMode.TwoHands)
@@ -165,11 +179,26 @@ public class UGInferenceRunnerScript : MonoBehaviour
             return;
 
         if (inputTensor.shape[3] != handData.Length)
-            Debug.LogWarning("Model input size is not equal to size of data: " + inputTensor.shape[3] + " != " + handData.Length + ". Check that Inference Hand Mode and Use Transform Data are set correctly");
+            Debug.LogWarning(
+                "Model input size is not equal to size of data: "
+                    + inputTensor.shape[3]
+                    + " != "
+                    + handData.Length
+                    + ". Check that Inference Hand Mode and Use Transform Data are set correctly"
+            );
 
-        Debug.Log("Hand Data Length: " + handData.Length);
-        Debug.Log("Input Tensor Shape: " + inputTensor.shape[0] + " " + inputTensor.shape[1] + " " + inputTensor.shape[2] + " " + inputTensor.shape[3]);
-        Debug.Log("Input Tensor Length: " + inputTensor.length);
+        // Debug.Log("Hand Data Length: " + handData.Length);
+        // Debug.Log(
+        //     "Input Tensor Shape: "
+        //         + inputTensor.shape[0]
+        //         + " "
+        //         + inputTensor.shape[1]
+        //         + " "
+        //         + inputTensor.shape[2]
+        //         + " "
+        //         + inputTensor.shape[3]
+        // );
+        // Debug.Log("Input Tensor Length: " + inputTensor.length);
 
         for (int i = 0; i < handData.Length; i++)
             inputTensor[0, 0, 0, i] = handData[i];
@@ -180,7 +209,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
         inferenceOutput = new float[outputTensor.length];
         for (int i = 0; i < outputTensor.length; i++)
             inferenceOutput[i] = outputTensor[i];
-        // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
+
+        // Debug.Log(
+        //     "Inference Output (UGInferenceRunnerScript): "
+        //         + string.Join(", ", inferenceOutput.Select(x => x.ToString("F4")))
+        // );
     }
 
     // void RunFunctionIfPoseDetected()
@@ -230,7 +263,6 @@ public class UGInferenceRunnerScript : MonoBehaviour
             var nnModel = LoadNNModel(filePath, "name");
             var loadedModel = ModelLoader.Load(nnModel);
 
-
             // Set the loaded model as the runtime model and create a new worker
             m_RuntimeModel = loadedModel;
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, m_RuntimeModel);
@@ -248,6 +280,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             return false;
         }
     }
+
     NNModel LoadNNModel(string modelPath, string modelName)
     {
         var converter = new ONNXModelConverter(true);
