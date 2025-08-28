@@ -3936,6 +3936,16 @@ PrefabInstance:
       objectReference: {fileID: 1372119458}
     - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
         type: 3}
+      propertyPath: twoHandDataEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: leftHandDataEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
       propertyPath: rightHandDataEnabled
       value: 1
       objectReference: {fileID: 0}
@@ -4020,7 +4030,12 @@ PrefabInstance:
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
       propertyPath: gestureName
-      value: 
+      value: fire_finger_gun_neg(static2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
+        type: 3}
+      propertyPath: recordingDuration
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4416265474014183002, guid: cf3c54520fa034d48b7004ccd9debe74,
         type: 3}
@@ -4103,12 +4118,27 @@ PrefabInstance:
         type: 3}
       propertyPath: modelAsset
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: ced2d1f0e11de496f9e42cb9de50f738,
+      objectReference: {fileID: 5022602860645237092, guid: db8fed78c8a023f4282eb9e735a121f2,
         type: 3}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: dataWriterObject
+      value: 
+      objectReference: {fileID: 1261261666}
     - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
       propertyPath: inferenceHandMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: inferenceInterval
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
+        type: 3}
+      propertyPath: modelTypeOverride
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5673987584295969961, guid: 8715e9411ba2848b5a159f92aba23db7,
         type: 3}
