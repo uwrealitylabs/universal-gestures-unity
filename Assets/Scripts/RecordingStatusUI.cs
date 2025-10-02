@@ -15,7 +15,7 @@ public class RecordingStatusUI : MonoBehaviour
     {
         if (dataWriterObject == null)
         {
-            Debug.LogError("Data writer object not set in RecordingStatusUI script.");
+            Debug.LogError("Data writer object not set in RecordingStatusUI script."); //test
             gameObject.SetActive(false);
             return;
         }
