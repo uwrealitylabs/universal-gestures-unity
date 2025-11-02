@@ -45,7 +45,7 @@ public class PrototypeGestureRecog : MonoBehaviour
             for (int i = 0; i < class_mean.Length; i++)
             {
                 // Update class mean by taking a running average
-                class_mean[i] += (new_fingerprint[i] - class_mean[i]) / new_count;
+                class_mean[i] += (new_fingerprint[i] - class_mean[i]) / (sample_count + 1);
             }
             sample_count++;
         } 
@@ -87,9 +87,9 @@ public class PrototypeGestureRecog : MonoBehaviour
         runtime_model = ModelLoader.Load(trained_mlp);
         worker = WorkerFactory.CreateWorker(WorkerFactory.Type.Auto, runtime_model);
 
-        if (testing_mode)
+        if (testing_mode) // hardcoded testing mode for single JSON for now
         {
-            string baseName = ExtractGestureNameFromFileName(specific_test_json);
+            string baseName = ExtractGestureNameFromFileName(specific_test_json); // specific_test_json is hardcoded
             Debug.Log($"Testing mode enabled. Running inference on single JSON file: {baseName}");
 
             SingleGesture test_gesture = LoadGestureSample(specific_test_json);
@@ -149,7 +149,7 @@ public class PrototypeGestureRecog : MonoBehaviour
         
         // For now, just take the first sample's handData and return it
         float[] raw_input = wrapper.samples.Length > 0 ? wrapper.samples[0].handData : null;
-        return new SingleGesture { gesture_name = gestureName, raw_input = raw_input };
+        return new SingleGesture { gestureName = gestureName, raw_input = raw_input };
     }
 
     public float[] RunInference(float[] input_arr)
