@@ -38,6 +38,10 @@ public class UGInferenceRunnerScript : MonoBehaviour
     public float thresholdConfidenceLevel;
     public Boolean loopFunctionWhilePoseIsHeld;
 
+    // Internal buffer for the frame history (queue and length))
+    [Header("Dynamic Gesture Settings")]
+    public int sequenceLength = 15;
+    private Queue<float[]> inputHistory = new Queue<float[]>();
 
     // Inference variables
     private Model m_RuntimeModel;
@@ -155,6 +159,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
     void RunInference()
     {
         inferenceTimer = 0;
+
         // select hand data based on inferenceHandMode
         float[] handData;
         if (inferenceHandMode == HandMode.LeftHand)
@@ -178,14 +183,28 @@ public class UGInferenceRunnerScript : MonoBehaviour
             handData = dataExtractor.twoHandsData;
         }
 
-        if (inputTensor.shape[0] != handData.Length)
+        // update buffer queue
+        inputHistory.Enqueue(handData);
+        if (inputHistory.Count > sequenceLength)
         {
-            Debug.LogWarning("Model input size is not equal to size of data. Check that Inference Hand Mode and Use Transform Data are set correctly");
+            inputHistory.Dequeue();
         }
-        // update input tensor with new hand data
-        for (int i = 0; i < handData.Length; i++)
-        {
-            inputTensor[i] = handData[i];
+
+        if (inputHistory.Count == sequenceLength)
+        {   
+            // WE MAKE A TENSOR WITH [Batch, Sequence (Height), Features (Width), Channels]
+            inputTensor?.Dispose();
+            inputTensor = new Tensor(1, sequenceLength, handData.Length, 1);
+
+            int seqIndex = 0;
+            foreach (float[] frame in inputHistory)
+            {
+                for(int i = 0; i < frame.Length; i++)
+                {
+                    // inputTensor[batch, sequence index, feature index, channel]
+                    inputTensor[0, seqIndex, i, 0] = frame[i];
+                }
+            }
         }
 
         //Debug.Log("Inference Tensor Size " + inputTensor.length);
