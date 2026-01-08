@@ -38,9 +38,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
     public float thresholdConfidenceLevel;
     public Boolean loopFunctionWhilePoseIsHeld;
 
-    // Internal buffer for the frame history (queue and length))
+    // Internal buffer for the frame history (queue and length)
+    // This is only really used for having a sequence as an input
+    // (so that Barracuda does not get confused and default to 8D)
     [Header("Dynamic Gesture Settings")]
-    public int sequenceLength = 15;
+    public int sequenceLength = 1;
     private Queue<float[]> inputHistory = new Queue<float[]>();
 
     // Inference variables
@@ -151,9 +153,9 @@ public class UGInferenceRunnerScript : MonoBehaviour
     void OnDestroy()
     {
         // Cleanup resources
-        inputTensor.Dispose();
-        outputTensor.Dispose();
-        worker.Dispose();
+        inputTensor?.Dispose();
+        outputTensor?.Dispose();
+        worker?.Dispose();
     }
 
     void RunInference()
@@ -183,7 +185,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
             handData = dataExtractor.twoHandsData;
         }
 
-        // update buffer queue
+        // update buffer queue (for sequential input)
         inputHistory.Enqueue(handData);
         if (inputHistory.Count > sequenceLength)
         {
@@ -192,26 +194,30 @@ public class UGInferenceRunnerScript : MonoBehaviour
 
         if (inputHistory.Count == sequenceLength)
         {   
-            // WE MAKE A TENSOR WITH [Batch, Sequence (Height), Features (Width), Channels]
+            // clear previous input tensor
             inputTensor?.Dispose();
-            inputTensor = new Tensor(1, sequenceLength, handData.Length, 1);
+            
+            // the model wants the all the frames with features flatted into one layer 
+            int totalFeatures = sequenceLength * handData.Length;
+            inputTensor = new Tensor(1, 1, 1, totalFeatures);
 
-            int seqIndex = 0;
+            // write the data into the feature 
+            int writeIndex = 0;
             foreach (float[] frame in inputHistory)
             {
-                for(int i = 0; i < frame.Length; i++)
+                for (int i = 0; i < frame.Length; i++)
                 {
-                    // inputTensor[batch, sequence index, feature index, channel]
-                    inputTensor[0, seqIndex, i, 0] = frame[i];
+                    inputTensor[0, 0, 0, writeIndex] = frame[i];
+                    writeIndex++;
                 }
             }
-        }
 
-        //Debug.Log("Inference Tensor Size " + inputTensor.length);
-        worker.Execute(inputTensor);
-        outputTensor = worker.PeekOutput();
-        inferenceOutput = outputTensor[0];
-        // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
+            //Debug.Log("Inference Tensor Size " + inputTensor.length);
+            worker.Execute(inputTensor);
+            outputTensor = worker.PeekOutput();
+            inferenceOutput = outputTensor[0];
+            // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
+        }
     }
 
     void RunFunctionIfPoseDetected()
