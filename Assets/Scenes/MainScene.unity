@@ -2654,6 +2654,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 54
       objectReference: {fileID: 0}
+    - target: {fileID: 2272661615802285742, guid: f39a9d103c4129b42a53567f6cd8356a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2468040081145960419, guid: f39a9d103c4129b42a53567f6cd8356a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2812,6 +2817,30 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1127312762}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1127312767 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2734225618138098454, guid: f39a9d103c4129b42a53567f6cd8356a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1127312762}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1127312768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272661615802285742, guid: f39a9d103c4129b42a53567f6cd8356a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1127312762}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1127312769 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2644266181112463229, guid: f39a9d103c4129b42a53567f6cd8356a,
@@ -3934,6 +3963,16 @@ PrefabInstance:
       propertyPath: rightOVRHand
       value: 
       objectReference: {fileID: 1372119458}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: leftOVRSkeleton
+      value: 
+      objectReference: {fileID: 1127312768}
+    - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
+        type: 3}
+      propertyPath: rightOVRSkeleton
+      value: 
+      objectReference: {fileID: 1127312767}
     - target: {fileID: 7934101211972861636, guid: 4c67175bdea3c4bd68bf5a5471347f89,
         type: 3}
       propertyPath: rightHandDataEnabled
