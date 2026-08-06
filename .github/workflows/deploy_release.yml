@@ -1,0 +1,40 @@
+name: Deployment into universal-gestures-release
+
+on:
+  workflow_dispatch:  # Only runs when "Run workflow" is pressed under the Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout only assets folder in universal-gestures-unity branch
+        uses: actions/checkout@v3
+        with:
+          ref: universal-gestures-unity
+          sparse-checkout: Assets/
+          sparse-checkout-cone-mode: false # Checks out just specified folder, not entire directory
+
+      - name: Copy newly modified files
+        run: |
+          mkdir -p updated_files
+          git fetch origin universal-gestures-release
+          git diff --name-only origin/universal-gestures-release..HEAD > changed_files.txt
+          cat changed_files.txt | xargs -I {} cp --parents {} updated_files/ || echo "No changes detected"
+
+      - name: Checkout universal-gestures-release branch
+        uses: actions/checkout@v3
+        with:
+          ref: universal-gestures-release
+          path: release
+
+      - name: Update newly modified files to release branch
+        run: |
+          cp -r updated_files/* release/ || echo "Nothing to update"
+          cd release
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git commit -m "Automated release update" || echo "No changes to commit"
+          git config --unset-all http.https://github.com/.extraheader
+          git push --set-upstream origin universal-gestures-release
