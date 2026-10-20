@@ -207,23 +207,39 @@ public class UGDataWriterScript : MonoBehaviour
         SetRecordingHandModeRightHand();
     }
 
+    // True while a recording countdown is running or data is being recorded
+    public bool IsRecordingPendingOrActive
+    {
+        get { return timeToStartRecording > 0 || recordingStatus != RecordingStatus.NotRecording; }
+    }
+
+    // Cancels any pending/active recording and forgets the current session's files.
+    // Files already written stay on disk; they just won't be uploaded.
+    public void ResetSession()
+    {
+        timeToStartRecording = -1;
+        recordingStatus = RecordingStatus.NotRecording;
+        writePath = null;
+        writePaths = new();
+        recordingFileName = string.Empty;
+    }
+
     public void SetRecordingHandModeLeftHand()
     {
         recordingHandMode = HandMode.LeftHand;
-        // clear paths
-        writePaths = new();
+        ResetSession();
     }
 
     public void SetRecordingHandModeRightHand()
     {
         recordingHandMode = HandMode.RightHand;
-        writePaths = new();
+        ResetSession();
     }
 
     // Sets recording hand mode to two hands
     public void SetRecordingHandModeTwoHands()
     {
         recordingHandMode = HandMode.TwoHands;
-        writePaths = new();
+        ResetSession();
     }
 }

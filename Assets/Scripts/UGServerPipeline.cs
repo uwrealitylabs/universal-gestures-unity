@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
@@ -16,49 +18,88 @@ public class UGServerPipeline : MonoBehaviour
 
     private string twoHandEndpoint = "train_model_two_hands/";
     private string oneHandEndpoint = "train_model_one_hand/";
-    string apiUrl;
-    private void Start()
+    private bool isUploading = false;
+
+    // Unity stops coroutines when this object is disabled, so make sure the upload flag doesn't get stuck
+    private void OnDisable()
     {
-        apiUrl = uri;
+        StopAllCoroutines();
+        isUploading = false;
     }
 
     public void SendTrainingData()
     {
-        if (writer.recordingHandMode == HandMode.TwoHands)
+        if (isUploading)
         {
-            apiUrl = uri + twoHandEndpoint;
+            text.text = "Upload in progress";
+            return;
         }
-        else
+        if (writer.IsRecordingPendingOrActive)
         {
-            apiUrl = uri + oneHandEndpoint;
+            text.text = "Recording in progress";
+            return;
         }
-        StartCoroutine(SendJsonData());
 
+        // Snapshot the session's recordings so later clears/mode switches can't affect this upload
+        List<string> paths = writer.writePaths.Where(File.Exists).ToList();
+        if (paths.Count == 0)
+        {
+            text.text = "No recordings to send";
+            return;
+        }
+
+        string jsonData;
+        try
+        {
+            jsonData = MergeJsonFiles(paths);
+        }
+        catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is JsonException)
+        {
+            Debug.LogError("Error reading recordings: " + e.Message);
+            text.text = "Failed to read recordings!";
+            return;
+        }
+        if (jsonData == null)
+        {
+            text.text = "No recordings to send";
+            return;
+        }
+
+        // Capture the hand mode once so endpoint, model file and LoadModel all agree
+        HandMode handMode = writer.recordingHandMode;
+        string apiUrl = uri + (handMode == HandMode.TwoHands ? twoHandEndpoint : oneHandEndpoint);
+
+        isUploading = true;
+        text.text = "Uploading training data...";
+        StartCoroutine(SendJsonData(jsonData, apiUrl, handMode));
     }
-    IEnumerator SendJsonData()
+
+    IEnumerator SendJsonData(string jsonData, string apiUrl, HandMode handMode)
     {
-        // Load the JSON file from Resources (or wherever it's located)
-        string jsonPath = writer.writePath;
-        // Read the JSON file
-        string jsonData = File.ReadAllText(jsonPath);
-        // iterate over all but the last one which we read above
-        for (int i = 0; i < writer.writePaths.Count - 1; i++)
+        try
         {
-            jsonData = CombineJsonFiles(jsonData, writer.writePaths[i]);
+            using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
+            {
+                // Set the request headers and body (content type is JSON)
+                byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
+                request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+
+                // Send the request and wait for a response
+                yield return request.SendWebRequest();
+
+                HandleResponse(request, handMode);
+            }
         }
+        finally
+        {
+            isUploading = false;
+        }
+    }
 
-        // Create a UnityWebRequest POST request
-        UnityWebRequest request = new UnityWebRequest(apiUrl, "POST");
-
-        // Set the request headers and body (content type is JSON)
-        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(jsonToSend);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        // Send the request and wait for a response
-        yield return request.SendWebRequest();
-
+    void HandleResponse(UnityWebRequest request, HandMode handMode)
+    {
         if (request.result == UnityWebRequest.Result.Success)
         {
 
@@ -79,7 +120,7 @@ public class UGServerPipeline : MonoBehaviour
                 Directory.CreateDirectory(directory);
             }
             string filePath = directory;
-            if (writer.recordingHandMode == HandMode.TwoHands)
+            if (handMode == HandMode.TwoHands)
             {
                 filePath += "two_hands.onnx";
             }
@@ -92,7 +133,7 @@ public class UGServerPipeline : MonoBehaviour
 
             // Debug.Log("File saved at: " + filePath);
             text.text = "File Downloaded! Loading Model";
-            if (inference.LoadModel(filePath, writer.recordingHandMode))
+            if (inference.LoadModel(filePath, handMode))
             {
                 text.text = "Loaded model!";
 
@@ -106,30 +147,41 @@ public class UGServerPipeline : MonoBehaviour
         else
         {
             Debug.LogError("Error sending data: " + request.error);
+            text.text = "Upload failed: " + request.error;
         }
 
     }
 
 
-    string CombineJsonFiles(string data, string file2)
+    // Merges the JSON arrays in the given files into one JSON array.
+    // Returns null if none of the files contain any entries.
+    string MergeJsonFiles(List<string> paths)
     {
-        // Read the JSON files
-        string json1 = data;
-        string json2 = File.ReadAllText(file2);
+        List<object> combined = new();
+        foreach (string path in paths)
+        {
+            string json = File.ReadAllText(path);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                continue;
+            }
+            List<object> entries = JsonConvert.DeserializeObject<List<object>>(json);
+            if (entries != null)
+            {
+                combined.AddRange(entries);
+            }
+        }
 
-        // Parse the JSON into lists
-        List<object> list1 = JsonConvert.DeserializeObject<List<object>>(json1);
-        List<object> list2 = JsonConvert.DeserializeObject<List<object>>(json2);
-
-        // Combine the lists
-        list1.AddRange(list2);
-
-        // Convert back to a JSON string
-        return JsonConvert.SerializeObject(list1, Formatting.Indented);
+        if (combined.Count == 0)
+        {
+            return null;
+        }
+        return JsonConvert.SerializeObject(combined, Formatting.Indented);
     }
-    // clear the data buffer
+
+    // clear the data buffer (recorded files stay on disk)
     public void clearData()
     {
-        writer.writePaths = new();
+        writer.ResetSession();
     }
 }
