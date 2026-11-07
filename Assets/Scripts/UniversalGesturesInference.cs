@@ -7,7 +7,6 @@ using System.Linq;
 using Newtonsoft.Json.Linq; // idk if its good to have this installed
 using Unity.Barracuda;
 using TMPro;
-using UnityEditor;
 using Unity.Barracuda.ONNX;
 
 

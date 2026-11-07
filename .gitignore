@@ -72,3 +72,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 .DS_Store
+
+# Unity 6 build temp and solution format
+/.utmp/
+*.slnx
