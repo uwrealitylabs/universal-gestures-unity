@@ -1,0 +1,17 @@
+{
+    "file_format_version": "1.0.0",
+    "api_layer": {
+        "name": "XR_APILAYER_METAX_operator",
+        "library_path": "./XrApiLayer_METAX_operator.dll",
+        "api_version": "1.1",
+        "implementation_version": "1",
+        "description": "API layer that providing agentic interface for OpenXR",
+        "disable_environment": "METAX_operator_disabled",
+        "instance_extensions": [
+            {
+                "name": "XR_METAX1_agentic_external_tool",
+                "extension_version": "1"
+            }
+        ]
+    }
+}
