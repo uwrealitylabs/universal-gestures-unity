@@ -2,6 +2,7 @@
   "dependencies": {
     "com.meta.xr.sdk.interaction.ovr": "207.0.1",
     "com.unity.addressables": "2.10.3",
+    "com.unity.ai.assistant": "2.21.0-pre.2",
     "com.unity.barracuda": "https://github.com/Unity-Technologies/barracuda-release.git#557e93387683363215675397db49479d42d99174",
     "com.unity.collab-proxy": "2.14.0",
     "com.unity.ide.rider": "3.1.0",
