@@ -6,9 +6,9 @@ _Related:_ [Universal Gestures Lab](https://github.com/uwrealitylabs/universal-g
 
 # Setup
 
-## Unity 2022.3.24f1
+## Unity 6000.3.28f1
 
-Unity is the editor that we use to create 3D/XR applications. We will be using it as our engine for the project. Download the [Unity Hub](https://unity.com/download), then use it to install Editor version 2022.3.24f1. Create a Unity account to go along with your install.
+Unity is the editor that we use to create 3D/XR applications. We will be using it as our engine for the project. Download the [Unity Hub](https://unity.com/download), then use it to install Editor version 6000.3.28f1. Create a Unity account to go along with your install.
 
 Clone the repository, then open Unity Hub on your computer. Choose "Add" and select the cloned folder. This will add the Universal Gestures project to your Unity Hub, where you can then launch the project.
 
