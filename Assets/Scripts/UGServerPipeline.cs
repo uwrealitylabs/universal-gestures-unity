@@ -101,10 +101,10 @@ public class UGServerPipeline : MonoBehaviour
             if (gesture != null)
             {
                 // Saved gesture: store under a unique name and link it to the gesture
-                string savedPath = GestureLibrary.SaveTrainedModel(gesture.id, fileData);
+                GestureLibrary.SaveTrainedModel(gesture.id, fileData);
                 text.text = "File Downloaded! Loading Model";
-                inference.useTransformData = gesture.settings.useTransformData;
-                text.text = inference.LoadModel(savedPath, gesture.settings.handMode)
+                // LoadGesture (not LoadModel) so the gesture's saved threshold/settings and loadedGestureId apply right away
+                text.text = inference.LoadGesture(GestureLibrary.Get(gesture.id))
                     ? $"Trained and saved \"{gesture.displayName}\"!"
                     : "Failed to load model!";
                 yield break;
