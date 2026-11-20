@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using TMPro;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 
 public class UGServerPipeline : MonoBehaviour
@@ -13,6 +14,15 @@ public class UGServerPipeline : MonoBehaviour
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] UGDataWriterScript writer;
     [SerializeField] UGInferenceRunnerScript inference;
+
+    // ID of the saved gesture being trained (set by the gesture-creation code).
+    // When set: all of that gesture's saved recordings are sent, and the returned model is
+    // saved with the gesture under a unique name (no more one_hand.onnx / two_hands.onnx overwrites).
+    // When empty: the old behaviour is used.
+    [Tooltip("ID of the saved gesture to train. Leave empty for the old behaviour.")]
+    public string gestureId;
+
+    GestureRecord ActiveGesture => string.IsNullOrEmpty(gestureId) ? null : GestureLibrary.Get(gestureId);
 
     private string twoHandEndpoint = "train_model_two_hands/";
     private string oneHandEndpoint = "train_model_one_hand/";
@@ -24,7 +34,9 @@ public class UGServerPipeline : MonoBehaviour
 
     public void SendTrainingData()
     {
-        if (writer.recordingHandMode == HandMode.TwoHands)
+        GestureRecord gesture = ActiveGesture;
+        HandMode mode = gesture != null ? gesture.settings.handMode : writer.recordingHandMode;
+        if (mode == HandMode.TwoHands)
         {
             apiUrl = uri + twoHandEndpoint;
         }
@@ -37,14 +49,35 @@ public class UGServerPipeline : MonoBehaviour
     }
     IEnumerator SendJsonData()
     {
-        // Load the JSON file from Resources (or wherever it's located)
-        string jsonPath = writer.writePath;
-        // Read the JSON file
-        string jsonData = File.ReadAllText(jsonPath);
-        // iterate over all but the last one which we read above
-        for (int i = 0; i < writer.writePaths.Count - 1; i++)
+        GestureRecord gesture = ActiveGesture;
+        string jsonData;
+
+        if (gesture != null)
         {
-            jsonData = CombineJsonFiles(jsonData, writer.writePaths[i]);
+            // Saved gesture: send ALL its recordings, including ones from earlier sessions
+            List<string> paths = GestureLibrary.RecordingPaths(gesture.id).Where(File.Exists).ToList();
+            if (paths.Count == 0)
+            {
+                text.text = "Record some examples first!";
+                yield break;
+            }
+            jsonData = File.ReadAllText(paths[0]);
+            for (int i = 1; i < paths.Count; i++)
+            {
+                jsonData = CombineJsonFiles(jsonData, paths[i]);
+            }
+        }
+        else
+        {
+            // Load the JSON file from Resources (or wherever it's located)
+            string jsonPath = writer.writePath;
+            // Read the JSON file
+            jsonData = File.ReadAllText(jsonPath);
+            // iterate over all but the last one which we read above
+            for (int i = 0; i < writer.writePaths.Count - 1; i++)
+            {
+                jsonData = CombineJsonFiles(jsonData, writer.writePaths[i]);
+            }
         }
 
         // Create a UnityWebRequest POST request
@@ -64,6 +97,18 @@ public class UGServerPipeline : MonoBehaviour
 
             // Get the binary data from the response (which is the file)
             byte[] fileData = request.downloadHandler.data;
+
+            if (gesture != null)
+            {
+                // Saved gesture: store under a unique name and link it to the gesture
+                string savedPath = GestureLibrary.SaveTrainedModel(gesture.id, fileData);
+                text.text = "File Downloaded! Loading Model";
+                inference.useTransformData = gesture.settings.useTransformData;
+                text.text = inference.LoadModel(savedPath, gesture.settings.handMode)
+                    ? $"Trained and saved \"{gesture.displayName}\"!"
+                    : "Failed to load model!";
+                yield break;
+            }
 
             // Save the file to a directory
             string directory = Application.dataPath + "/../serverModels/";
