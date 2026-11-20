@@ -50,6 +50,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
     // Run function variables
     private Boolean eventTriggered = false;
 
+    // Saved gesture currently loaded (null if using modelAsset or nothing)
+    [HideInInspector]
+    public string loadedGestureId;
+    private int outputIndex = 0;
+
     void Start()
     {
         dataExtractor = dataExtractorObject.GetComponent<UGDataExtractorScript>();
@@ -61,11 +66,19 @@ public class UGInferenceRunnerScript : MonoBehaviour
             return;
         }
 
-        SetupInference();
+        if (modelAsset != null && worker == null) // a saved gesture may already have been loaded
+        {
+            SetupInference();
+        }
+        // else: idle until LoadGesture / LoadModel is called (e.g. a saved gesture on startup)
     }
 
     void Update()
     {
+        if (worker == null)
+        {
+            return; // no model loaded yet
+        }
         // Run inference every inferenceInterval seconds
         inferenceTimer += Time.deltaTime;
         if (inferenceTimer >= inferenceInterval)
@@ -83,11 +96,10 @@ public class UGInferenceRunnerScript : MonoBehaviour
 
     bool ValidateModel()
     {
-        // Check if model is set
+        // A model can now come from a saved gesture at runtime, so an empty modelAsset is allowed
         if (modelAsset == null)
         {
-            Debug.LogError("UGInferenceRunnerScript: modelAsset is not set.");
-            return false;
+            Debug.Log("UGInferenceRunnerScript: no modelAsset set; waiting for a saved gesture to be loaded.");
         }
         return true;
     }
@@ -145,10 +157,9 @@ public class UGInferenceRunnerScript : MonoBehaviour
 
     void OnDestroy()
     {
-        // Cleanup resources
-        inputTensor.Dispose();
-        outputTensor.Dispose();
-        worker.Dispose();
+        // Cleanup resources (outputTensor belongs to the worker, so it isn't disposed here)
+        inputTensor?.Dispose();
+        worker?.Dispose();
     }
 
     void RunInference()
@@ -177,7 +188,11 @@ public class UGInferenceRunnerScript : MonoBehaviour
             handData = dataExtractor.twoHandsData;
         }
 
-        if (inputTensor.shape[0] != handData.Length)
+        if (handData == null)
+        {
+            return; // hand not tracked yet
+        }
+        if (inputTensor.length != handData.Length)
         {
             Debug.LogWarning("Model input size is not equal to size of data. Check that Inference Hand Mode and Use Transform Data are set correctly");
         }
@@ -190,7 +205,7 @@ public class UGInferenceRunnerScript : MonoBehaviour
         //Debug.Log("Inference Tensor Size " + inputTensor.length);
         worker.Execute(inputTensor);
         outputTensor = worker.PeekOutput();
-        inferenceOutput = outputTensor[0];
+        inferenceOutput = outputTensor[Mathf.Clamp(outputIndex, 0, outputTensor.length - 1)];
         // Debug.Log("Inference Output (UGInferenceRunnerScript): " + inferenceOutput);
     }
 
@@ -230,9 +245,9 @@ public class UGInferenceRunnerScript : MonoBehaviour
         {
             // change paramters
             inferenceHandMode = newHandMode;
-            // clean up old inference
-            inputTensor.Dispose();
-            outputTensor.Dispose();
+            // clean up old inference (outputTensor belongs to the old worker)
+            inputTensor?.Dispose();
+            outputTensor = null;
             // Dispose of the existing worker if necessary
             if (worker != null)
             {
@@ -278,6 +293,47 @@ public class UGInferenceRunnerScript : MonoBehaviour
         }
 
     }
+    /// <summary>
+    /// Loads a saved gesture: applies its saved settings, then loads its .onnx from disk.
+    /// Works with the training server offline.
+    /// </summary>
+    public bool LoadGesture(GestureRecord gesture)
+    {
+        if (gesture == null || !gesture.IsTrained)
+        {
+            return false;
+        }
+        useTransformData = gesture.settings.useTransformData;
+        thresholdConfidenceLevel = gesture.settings.thresholdConfidenceLevel;
+        loopFunctionWhilePoseIsHeld = gesture.settings.loopFunctionWhilePoseIsHeld;
+        inferenceInterval = gesture.settings.inferenceInterval;
+        outputIndex = gesture.model.outputIndex;
+
+        bool ok = LoadModel(GestureLibrary.ModelPath(gesture), gesture.settings.handMode);
+        loadedGestureId = ok ? gesture.id : null;
+        inferenceOutput = 0;
+        eventTriggered = false;
+        if (ok && dataExtractor != null && !ValidateDataExtractor())
+        {
+            Debug.LogWarning($"UGInferenceRunnerScript: enable {gesture.settings.handMode} data on the data extractor " +
+                             $"to recognise \"{gesture.displayName}\".");
+        }
+        return ok;
+    }
+
+    /// <summary>Stops recognition (e.g. the loaded gesture was deleted or isn't trained yet).</summary>
+    public void UnloadModel()
+    {
+        inputTensor?.Dispose();
+        inputTensor = null;
+        outputTensor = null;
+        worker?.Dispose();
+        worker = null;
+        loadedGestureId = null;
+        inferenceOutput = 0;
+        eventTriggered = false;
+    }
+
     NNModel LoadNNModel(string modelPath, string modelName)
     {
         var converter = new ONNXModelConverter(true);
